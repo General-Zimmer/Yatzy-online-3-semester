@@ -3,14 +3,15 @@ export default function randomName() {
 }
 
 
-
+// Archive of the original code
+/*
 export const dices = [
     { value: 0, lockedState: false },
     { value: 0, lockedState: false },
     { value: 0, lockedState: false },
     { value: 0, lockedState: false },
     { value: 0, lockedState: false }
-];
+];*/
 
 
 // Variable for Number of times the 5 dice have been thrown.
@@ -28,29 +29,48 @@ function getRandomInt() {
     return Math.floor(Math.random() * 6) + 1;
 }
 
-export function newRound() {
+//leaving this unaltered for now
+export function newRound() { 
     resetDices();
     resetThrowCount();
 }
 
+//leaving this unaltered for now
 export function newGame() {
     throwCount = 0;
     roundCount = 0;
     resetDices();
 }
 
-function resetDices() {
+/**
+ * 
+ * @param {*} dices 
+ * @returns reinitialized dices
+ */
+function resetDices(dices) {
     for (let i = 0; i < dices.length; i++) {
         dices[i].value = 0;
         dices[i].lockedState = false;
     }
+    return dices;
 }
-/**
+
+/** method archived for now
     * Reset the throw count.
-    */
+    
 export function resetThrowCount() {
     throwCount = 0;
     roundCount++;
+    for (let i = 0; i < dices.length; i++) {
+        dices[i].value = 0;
+    }
+    return dices;
+}*/
+/**New version of the above method
+    * sets dice values to 0 call this method to reset trow count.
+    * remember to reset the throw count when calling this method.
+    */
+function resetThrowCount(dices) {
     for (let i = 0; i < dices.length; i++) {
         dices[i].value = 0;
     }
@@ -59,15 +79,15 @@ export function resetThrowCount() {
 /**
     * Roll the 5 dice. Only roll dice that are not hold.<br/>
     * Note: holdStatus[index] is true, if die no. index is hold (for index in [0..4]).
+    * remembet to increment throw count after calling this method.
     */
-
-export function rollDice() {
+export function rollDice(dices) {
     for (let i = 0; i < dices.length; i++) {
         if (!dices[i].lockedState) {
             dices[i].value = getRandomInt();
         }
     }
-    throwCount++;
+    return dices;
 }
 
 // -------------------------------------------------------------------------
@@ -77,7 +97,7 @@ export function rollDice() {
 // Index 0 is not used.
 // Note: This method can be used in several of the following methods.
 
-export function frequency() {
+export function frequency(dices) {
     let currentFrequency = [0, 0, 0, 0, 0, 0, 0];
     for (let i = 0; i < dices.length; i++) {
         let yeetnumber = dices[i].value;
