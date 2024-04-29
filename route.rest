@@ -1,5 +1,6 @@
 GET http://localhost:8000/api/
 
+
 ###
 POST http://localhost:8000/api/add-player
 Content-Type: application/json
@@ -8,3 +9,12 @@ Content-Type: application/json
     "username": "Peter",
     "score": 25
 }
+
+
+###
+GET http://localhost:8000/api/Peter
+// Virker
+
+###
+GET http://localhost:8000/api/Lars
+// Fejl, as expected
