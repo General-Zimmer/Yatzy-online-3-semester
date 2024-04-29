@@ -1,0 +1,19 @@
+{
+  "name": "yatzy-online-3-semester",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mocha": "^10.4.0",
+    "node-fetch": "^3.3.2",
+    "pug": "^3.0.2"
+  }
+}
