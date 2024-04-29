@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yatzy mini-projekt</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="scripts/frontend.js" defer></script>
+</head>
+
+<body>
+    <div class="game-container">
+        <div class="top-container">
+            <div class="dice-container">
+                <img id="dice-holder-1" src="./assets/empty-dice_0.png" alt="Die 6" class="dice_regular">
+                <img id="dice-holder-2" src="./assets/empty-dice_1.png" alt="Die 3" class="dice_regular">
+                <img id="dice-holder-3" src="./assets/empty-dice_2.png" alt="Die 1" class="dice_regular">
+                <img id="dice-holder-4" src="./assets/empty-dice_3.png" alt="Die 5" class="dice_regular">
+                <img id="dice-holder-5" src="./assets/empty-dice_0.png" alt="Die 2" class="dice_regular">
+            </div>
+
+
+            <span id="throwDisplay">Throw 0</span>
+            <button class="roll-button">Roll!</button>
+        </div>
+
+        <div class="bottom-container">
+            <div id="grid-container">
+
+                <div id="id-1s" class="grid-item"><span class="label">1's</span></div>
+                <div id="id-1s-text"><input for="sum" id="input-1s" type="text" class="txtbox" readonly></div>
+
+                <div id="id-2s" class="grid-item"><span class="label">2's</span></div>
+                <div id="id-2s-text"><input for="sum" id="input-2s" type="text" class="txtbox" readonly></div>
+
+                <div id="id-3s" class="grid-item"><span class="label">3's</span></div>
+                <div id="id-3s-text"><input for="sum" id= "input-3s" type="text" class="txtbox" readonly></div>
+
+                <div id="id-4s" class="grid-item"><span class="label">4's</span></div>
+                <div id="id-4s-text"><input for="sum" id="input-4s" type="text" class="txtbox" readonly></div>
+
+                <div id="id-5s" class="grid-item"><span class="label">5's</span></div>
+                <div id="id-5s-text"><input for="sum" id="input-5s" type="text" class="txtbox" readonly></div>
+
+                <div id="id-6s" class="grid-item"><span class="label">6's</span></div>
+                <div id="id-6s-text"><input for="sum" id="input-6s" type="text" class="txtbox" readonly></div>
+
+                <div id="id-one-pair" class="grid-item"><span class="label">One pair</span></div>
+                <div id="id-one-pair-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-two-pair" class="grid-item"><span class="label">Two pair</span></div>
+                <div id="id-two-pair-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-three-same" class="grid-item"><span class="label">Three same</span></div>
+                <div id="id-three-same-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-four-same" class="grid-item"><span class="label">Four same</span></div>
+                <div id="id-four-same-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-full-house" class="grid-item"><span class="label">Full house</span></div>
+                <div id="id-full-house-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-small-straight" class="grid-item"><span class="label">Small straight</span></div>
+                <div id="id-small-straight-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-large-straight" class="grid-item"><span class="label">Large straight</span></div>
+                <div id="id-large-straight-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-chance" class="grid-item"><span class="label">Chance</span></div>
+                <div id="id-chance-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-yatzy" class="grid-item"><span class="label">Yatzy</span></div>
+                <div id="id-yatzy-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-sum" class="grid-item"><span class="label">Sum:</span></div>
+                <div id="id-sum-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-sum-text"><input for="sum" id="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-bonus" class="grid-item"><span class="label">Bonus:</span></div>
+                <div id="id-bonus-text"><input for="sum" type="text" class="txtbox" readonly></div>
+
+                <div id="id-bonus-text"><input for="sum" id="bonus" type="text" class="txtbox" readonly></div>
+
+                <div id="id-total" class="grid-item"><span class="label">Total:</span></div>
+                <!-- <div id="id-total-text"><input for="sum" type="text" class="txtbox" readonly></div> -->
+
+                <div id="id-total-text"><input for="sum" id="total" type="text" class="txtbox" readonly></div>
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
