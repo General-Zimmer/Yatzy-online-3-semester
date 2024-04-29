@@ -1,8 +1,8 @@
-GET http://localhost:8000/api/
+GET http://localhost:8000/players/
 
 
 ###
-POST http://localhost:8000/api/add-player
+POST http://localhost:8000/players/add-player
 Content-Type: application/json
 
 {
@@ -12,9 +12,9 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:8000/api/Peter
+GET http://localhost:8000/players/Peter
 // Virker
 
 ###
-GET http://localhost:8000/api/Lars
+GET http://localhost:8000/players/Lars
 // Fejl, as expected

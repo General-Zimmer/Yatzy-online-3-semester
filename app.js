@@ -16,7 +16,7 @@ app.use(session({
 
 app.set('view engine', 'pug');
 
-app.use('/api', playersRouter);
+app.use('/players', playersRouter);
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
