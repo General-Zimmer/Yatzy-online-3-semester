@@ -44,16 +44,16 @@ router.get('/:ign', async (request, response) => {
 
 
 // Tilføj ny spiller
-router.post('/add-player', async (req, res) => {
+router.post('/add-player', async (request, response) => {
     try {
         const newPlayer = {
             username: request.body.username,
             score: parseInt(request.body.score)
         }
         await savePlayer(newPlayer);
-        res.status(201).json(newPlayer);
+        response.status(201).json(newPlayer);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        response.status(400).json({ message: error.message });
     }
 });
 
