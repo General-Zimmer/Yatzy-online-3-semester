@@ -1,22 +1,23 @@
-import express from 'express'
-const app = express()
+import express from 'express';
+import session from 'express-session';
+import playersRouter from './api/router.js';
 
-app.use(express.static('assets'))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+const app = express();
 
-import session from 'express-session'
+app.use(express.static('assets'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(session({
     secret: 'secretHere',
     saveUninitialized: true,
     resave: true
-}))
+}));
 
-app.set('view engine', 'pug')
+app.set('view engine', 'pug');
 
-import api from './api/Zimmers-amazing.API.js'
-app.use('/api', api)
+app.use('/api', playersRouter);
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
-})
+});
