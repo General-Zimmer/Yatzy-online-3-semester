@@ -1,6 +1,6 @@
 import express from 'express';
 import session from 'express-session';
-import playersRouter from './api/router.js';
+import api from './api/api.js';
 
 const app = express();
 
@@ -16,7 +16,7 @@ app.use(session({
 
 app.set('view engine', 'pug');
 
-app.use('/players', playersRouter);
+app.use('/api', api);
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
