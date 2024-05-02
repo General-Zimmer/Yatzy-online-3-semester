@@ -182,7 +182,7 @@ export function fourSamePoints() {
  * Return 0, if there aren't 3 dice with the same face value<br/>
  * and 2 other dice with the same but different face value.
  */
-function fullHousePoints() {
+export function fullHousePoints() {
     let frequencies = frequency();
     let pairPoints = 0;
     let triplePoints = threeSamePoints();
@@ -206,7 +206,7 @@ function fullHousePoints() {
  * Return points for small straight.<br/>
  * Return 0, if the dice aren't showing 1,2,3,4,5.
  */
-function smallStraightPoints() {
+export function smallStraightPoints() {
     let frequencies = frequency();
     let haveSmallStraight = true;
     let smallStraight = 0;

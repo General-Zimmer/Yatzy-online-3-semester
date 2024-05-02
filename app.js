@@ -1,7 +1,7 @@
 import express from 'express';
 import session from 'express-session';
-import playersRouter from './api/router.js';
-import { v4 as uuidv4 } from 'uuid';
+import playersRouter from './api/api.js';
+import gameRouter from './api/gameLogic.js';
 
 const app = express();
 
@@ -14,7 +14,7 @@ app.set('view engine', 'pug');
 
 // Konfiguration af session middleware
 app.use(session({
-    secret: uuidv4(),
+    secret: "Secret_Sauce",
     resave: false,
     saveUninitialized: true,
 
@@ -45,7 +45,7 @@ app.get('/yatzy', (request, response) =>{
 
 // Middleware der dirigerer anmodninger til vores "router" RESTful api
 app.use('/players', playersRouter);
-
+app.use('/gameLogic', gameRouter);
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
