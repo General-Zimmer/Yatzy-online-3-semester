@@ -1,0 +1,25 @@
+doctype html 
+html(lang="en")
+  include includes/header 
+  include includes/menubar
+  body
+    .game-container
+      .top-container
+        .dice-container
+          img#dice-holder-1(src="/assets/pics/empty-dice_0.png", alt="Die 6", class="dice_regular")
+          img#dice-holder-2(src="/assets/pics/empty-dice_1.png", alt="Die 3", class="dice_regular")
+          img#dice-holder-3(src="/assets/pics/empty-dice_2.png", alt="Die 1", class="dice_regular")
+          img#dice-holder-4(src="/assets/pics/empty-dice_3.png", alt="Die 5", class="dice_regular")
+          img#dice-holder-5(src="/assets/pics/empty-dice_4.png", alt="Die 2", class="dice_regular")
+        span#throwDisplay Throw 0
+        button.roll-button Roll!
+      .bottom-container
+        #grid-container
+          each item, index in ["1's", "2's", "3's", "4's", "5's", "6's", "One pair", "Two pair", "Three same", "Four same", "Full house", "Small straight", "Large straight", "Chance", "Yatzy", "Sum", "Bonus", "Total"]
+            - let idName = "id-" + item.toLowerCase().replace(/\s+/g, '-')
+            - let inputId = "input-" + item.toLowerCase().replace(/\s+/g, '-')
+            .grid-item(class=$idName)
+              span.label= item
+            div
+              input.txtbox(for="#{inputId}", type="text", readonly)
+    include includes/footer
