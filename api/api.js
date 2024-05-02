@@ -50,8 +50,21 @@ api.post('/add-player', async (request, response) => {
             username: request.body.username,
             score: parseInt(request.body.score)
         }
-        await savePlayer(newPlayer);
-        response.status(201).json(newPlayer);
+
+        let players = Array.from(await getPlayers())
+        let hasPlayer = false 
+        players.forEach(player => {
+            player.username === newPlayer.username ? hasPlayer = true : hasPlayer = false
+        });
+
+
+        if (hasPlayer) {
+            response.status(400).json({ message: 'Player already exists' })
+        } else {
+            await savePlayer(newPlayer);
+            response.status(201).json(newPlayer);
+        }
+
     } catch (error) {
         response.status(400).json({ message: error.message });
     }
