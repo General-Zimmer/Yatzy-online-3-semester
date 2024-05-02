@@ -1,9 +1,9 @@
-GET http://localhost:8000/players/
+GET http://localhost:8000/api/
 
 
 ###
-POST http://localhost:8000/players/add-player
-Content-Type: application/json
+POST http://localhost:8000/api/add-player
+Content-Type: application/json 
 
 {
     "username": "Peter",
@@ -12,9 +12,9 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:8000/players/Peter
+GET http://localhost:8000/api/Peter
 // Virker
 
 ###
-GET http://localhost:8000/players/Lars
+GET http://localhost:8000/api/Lars
 // Fejl, as expected

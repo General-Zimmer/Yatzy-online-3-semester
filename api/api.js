@@ -35,7 +35,7 @@ api.get('/:ign', async (request, response) => {
     if(player){
         response.json(player)
     } else {
-        response.status(404).send('Player not found')
+        response.status(404).json({ message: 'Player not found'})
     }
 } catch(error){
     response.status(500).json({ message: error.message })
@@ -50,11 +50,70 @@ api.post('/add-player', async (request, response) => {
             username: request.body.username,
             score: parseInt(request.body.score)
         }
-        await savePlayer(newPlayer);
-        response.status(201).json(newPlayer);
+
+        let players = Array.from(await getPlayers())
+        let hasPlayer = false 
+        players.forEach(player => {
+            player.username === newPlayer.username ? hasPlayer = true : hasPlayer = false
+        });
+
+
+        if (hasPlayer) {
+            response.status(400).json({ message: 'Player already exists' })
+        } else {
+            await savePlayer(newPlayer);
+            response.status(201).json(newPlayer);
+        }
+
     } catch (error) {
         response.status(400).json({ message: error.message });
     }
 });
+
+api.post('/startgame', async (request, response) => {
+
+    request.session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
+    let players = []
+    try {
+        players = Array.from(request.body.players)
+    } catch (error) {
+        response.status(400).json({ message: error.message })
+        return
+    }
+
+
+    request.session.players = []
+    for (let i = 0; i < players.length; i++) {
+        session.players.push({
+            name: players[i].name, 
+            dices: [
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false }
+        ], 
+        results: new  Map([
+        [one, -1],
+        [two, -1],
+        [three, -1],
+        [four, -1],
+        [five, -1],
+        [six, -1],
+        [onePair, -1],
+        [twoPairs, -1],
+        [threeSame, -1],
+        [fourSame, -1],
+        [fullHouse, -1],
+        [smallStraight, -1],
+        [largeStraight, -1],
+        [chance, -1],
+        [yatzy, -1]
+        ]),
+        turn: 0
+    })}
+
+    response.redirect('/yatzy')
+})
 
 export default api

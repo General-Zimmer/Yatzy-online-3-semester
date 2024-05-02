@@ -23,7 +23,7 @@ app.use(session({
 
 // Loader pug startsiden
 app.get('/', (request, response) => {
-    response.render('start');
+    response.render('login');
 });
 
 
