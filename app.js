@@ -44,7 +44,7 @@ app.get('/yatzy', (request, response) =>{
 
 
 // Middleware der dirigerer anmodninger til vores "router" RESTful api
-app.use('/players', playersRouter);
+app.use('/api/players', playersRouter);
 app.use('/gameLogic', gameRouter);
 
 app.listen(8000, () => {
