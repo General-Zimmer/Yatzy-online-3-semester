@@ -1,7 +1,7 @@
 import express from 'express'
 import fs from 'fs'
 
-const router = express.Router();
+const api = express.Router();
 
 
 async function getPlayers(){
@@ -18,7 +18,7 @@ async function savePlayer(data = {}){
 
 
 // Hent alle spillere
-router.get('/', async (request, response) => {
+api.get('/', async (request, response) => {
     try {
         const players = await getPlayers()
         response.json(players)
@@ -28,7 +28,7 @@ router.get('/', async (request, response) => {
 })
 
 // Hent specifik spiller
-router.get('/:ign', async (request, response) => {
+api.get('/:ign', async (request, response) => {
     try{
     const players = await getPlayers()
     const player = players.find(p => p.username === request.params.ign)
@@ -44,7 +44,7 @@ router.get('/:ign', async (request, response) => {
 
 
 // Tilføj ny spiller
-router.post('/add-player', async (request, response) => {
+api.post('/add-player', async (request, response) => {
     try {
         const newPlayer = {
             username: request.body.username,
@@ -57,4 +57,4 @@ router.post('/add-player', async (request, response) => {
     }
 });
 
-export default router
+export default api
