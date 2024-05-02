@@ -35,7 +35,7 @@ api.get('/:ign', async (request, response) => {
     if(player){
         response.json(player)
     } else {
-        response.status(404).send('Player not found')
+        response.status(404).json({ message: 'Player not found'})
     }
 } catch(error){
     response.status(500).json({ message: error.message })
