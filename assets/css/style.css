@@ -4,7 +4,12 @@ body {
     font-family: 'Roboto', sans-serif; /* use Roboto font, fallback to sans-serif */
     margin: 0;
     width: 100vw; /* set body width to 100% of viewport width */
+    min-height: 100vw; /* set body min height to 100% of viewport height */
 }
+
+h1 {
+    color: #00353a;
+  }
 
 .game-container {
     display: grid;
