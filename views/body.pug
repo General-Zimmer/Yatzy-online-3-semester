@@ -1,0 +1,14 @@
+.game-container
+    .top-container
+        .dice-container
+            each die, index in diceImages
+                img(src=`./assets/pics/empty-dice_${index}.png`, alt=`Die ${die}`, class="dice_regular")
+        span#throwDisplay Throw #{throwCount}
+        button.roll-button Roll!
+    .bottom-container
+        #grid-container
+            each category in categories
+                div(id=`id-${category.name.toLowerCase().replace(' ', '-')}`, class="grid-item")
+                    span.label= category.name
+                div(id=`id-${category.name.toLowerCase().replace(' ', '-')}-text`)
+                    input(for="sum", id=`input-${category.name.toLowerCase().replace(' ', '-')}`, type="text", class="txtbox", readonly)
