@@ -72,7 +72,7 @@ api.post('/add-player', async (request, response) => {
 
 api.post('/startgame', async (request, response) => {
 
-    request.session.id = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
+    request.session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
     let players = []
     try {
         players = Array.from(request.body.players)
