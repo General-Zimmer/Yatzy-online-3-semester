@@ -9,6 +9,7 @@ body {
 
 h1 {
     color: #00353a;
+    font-size: 60px;
 }
 
 .game-container {
@@ -59,7 +60,28 @@ h1 {
     margin-bottom: 5px;
 }
 
-.roll-button {
+hr {
+    height: 2px;  
+    background-color: #45a049;  
+    border: none;
+}
+
+/* Position the footer at the bottom of the page */
+.footer {
+    margin-top: auto; /* Push footer to the bottom */
+    text-align: center; /* Center the content of the footer */
+    color: #00353a;
+}
+
+/* Center the login-page content */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ensure container takes up the full height of the viewport */
+}
+
+.roll-button, .login-form button {
     margin-top: 10px;
     padding: 10px 25px;
     background-color: #45a049;
@@ -71,11 +93,43 @@ h1 {
     box-shadow: 0 2px 4px rgba(0, 24, 8, 0.2);
 }
 
-.roll-button:hover {
+.roll-button:hover, .login-form button:hover {
     background-color: #6ac054;
     transform: scale(1.05); /* increase size by 5% */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* add a slight shadow */
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* add smooth transition */
+}
+
+.login-form button {
+    margin: 10px auto; /* Add margin to center the button horizontally */
+    display: block; /* Ensure the button takes up the full width of its container */
+}
+
+.login-form h1 {
+    margin-bottom: 25px; /* Add margin bottom to the title */
+    align-items: center;
+}
+
+.login-form label {
+    margin-bottom: 10px; /* Add margin bottom to the label */
+    align-items: center;
+}
+
+.login-form input {
+    border: 1px solid #45a049;
+    border-radius: 5px;
+    margin-bottom: 10px; /* Add margin bottom to the input */
+}
+
+.login-form .centered-button {
+    margin-top: 5px; /* Add margin top to the wrapping div */
+}
+
+.login-form input[type="text"] {
+    font-size: 16px; /* Increase font size */
+    padding: 8px; /* Increase padding to make the input field bigger */
+    width: calc(100% - 16px); /* Adjust width to accommodate increased padding */
+    box-sizing: border-box; /* Ensure padding and border are included in the width */
 }
 
 .bottom-container {
@@ -149,6 +203,12 @@ h1 {
     background: linear-gradient(to right, #45a049, #6ac054);
     color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* add a slight shadow */
+}
+
+/* Add more padding and adjust font size for the Login link */
+.menubar {
+    padding: 10px 10px; /* Increase padding */
+    font-size: 16px; /* Decrease font size */
 }
 
 
