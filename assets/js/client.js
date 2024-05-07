@@ -35,6 +35,7 @@ async function rollTheDice(){
         console.error('Error rolling the dice:', error.message);
     }
 }
+    
 
 let buttonNode = document.getElementById('rollButton');
 buttonNode.addEventListener('click', () => {
