@@ -117,18 +117,20 @@ api.post('/startgame', async (request, response) => {
 })
 
 api.post('/throw', async (request, response) => {
-    let currentPlayer = request.session.currentPlayer
+    //Get the game data from the session
+    let currentPlayer = request.session.currentPlayer //Need to implement this somehow
     let dices = request.session.players[currentPlayer].dices
     let throwCount = request.session.players[currentPlayer].throwCount
-    if (throwCount < 3) {
-        for (let i = 0; i < dices.length; i++) {
-            if (!dices[i].lockedState) {
-                dices[i].value = Math.floor(Math.random() * 6) + 1
-            }
+    for (let i = 0; i < dices.length; i++) {
+        if (!dices[i].lockedState) {
+            dices[i].value = Math.floor(Math.random() * 6) + 1
         }
-        request.session.players[request.session.currentPlayer].throwCount++
     }
-    response.    
+    request.session.players[request.session.currentPlayer].throwCount++
+    console.log(dices)
+    consolse.log(request.session.players[request.session.currentPlayer].dices)
+
+    response.json({ dices: dices, throwCount: throwCount }) //Send current player also?
 })
 
 export default api
