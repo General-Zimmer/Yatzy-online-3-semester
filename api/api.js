@@ -81,7 +81,7 @@ api.post('/startgame', async (request, response) => {
         return
     }
 
-
+    
     request.session.players = []
     for (let i = 0; i < players.length; i++) {
         session.players.push({
@@ -114,6 +114,21 @@ api.post('/startgame', async (request, response) => {
     })}
 
     response.redirect('/yatzy')
+})
+
+api.post('/throw', async (request, response) => {
+    let currentPlayer = request.session.currentPlayer
+    let dices = request.session.players[currentPlayer].dices
+    let throwCount = request.session.players[currentPlayer].throwCount
+    if (throwCount < 3) {
+        for (let i = 0; i < dices.length; i++) {
+            if (!dices[i].lockedState) {
+                dices[i].value = Math.floor(Math.random() * 6) + 1
+            }
+        }
+        request.session.players[request.session.currentPlayer].throwCount++
+    }
+    response.    
 })
 
 export default api

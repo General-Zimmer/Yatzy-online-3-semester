@@ -42,7 +42,6 @@ app.get('/yatzy', (request, response) =>{
     response.render('yatzy')
 })
 
-
 // Middleware der dirigerer anmodninger til vores "router" RESTful api
 app.use('/api', api);
 
