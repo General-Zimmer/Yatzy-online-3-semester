@@ -29,19 +29,29 @@ app.get('/', (request, response) => {
 
 // HTTP request for at gemme brugernavn, fra request,
 // i session og omdirigerer brugeren til yatzyspillet
-app.post('/', async (request, response) => {
-    console.log("Session count: " + request.session.sessionCount);
+let activeSessions = {}
 
+app.post('/', async (request, response) => {
     const user = request.body.username;
     if(!request.session.isLoggedIn){
         request.session.username = user;
-        request.session.sessionCount = (request.session.sessionCount || 0) + 1;
+        
+        activeSessions[request.sessionID] = { username : user, timestamp: new Date() }
         console.log(`Player session created: ${user}`);
         request.session.isLoggedIn = true;
-    }
+    
+        const sessionCount = Object.keys(activeSessions).length;
+        console.log(`Active sessions: ${sessionCount}`);
 
-    console.log("Session count: " + request.session.sessionCount);
+        if (sessionCount > 2) {
+            response.redirect('/lobby');
+        }
+    }
     response.redirect('/yatzy');
+});
+
+app.get('/lobby', (request, response) =>{
+    response.render('lobby');
 });
 
 // Render yatzy pug
