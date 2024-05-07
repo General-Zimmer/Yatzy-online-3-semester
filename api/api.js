@@ -44,7 +44,7 @@ api.get('/:ign', async (request, response) => {
 
 
 // Tilføj ny spiller
-api.post('/add-player', async (request, response) => {
+api.post('/new', async (request, response) => {
     try {
         const newPlayer = {
             username: request.body.username,
@@ -70,50 +70,6 @@ api.post('/add-player', async (request, response) => {
     }
 });
 
-api.post('/startgame', async (request, response) => {
 
-    request.session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
-    let players = []
-    try {
-        players = Array.from(request.body.players)
-    } catch (error) {
-        response.status(400).json({ message: error.message })
-        return
-    }
-
-
-    request.session.players = []
-    for (let i = 0; i < players.length; i++) {
-        session.players.push({
-            name: players[i].name, 
-            dices: [
-            { value: 0, lockedState: false },
-            { value: 0, lockedState: false },
-            { value: 0, lockedState: false },
-            { value: 0, lockedState: false },
-            { value: 0, lockedState: false }
-        ], 
-        results: new  Map([
-        [one, -1],
-        [two, -1],
-        [three, -1],
-        [four, -1],
-        [five, -1],
-        [six, -1],
-        [onePair, -1],
-        [twoPairs, -1],
-        [threeSame, -1],
-        [fourSame, -1],
-        [fullHouse, -1],
-        [smallStraight, -1],
-        [largeStraight, -1],
-        [chance, -1],
-        [yatzy, -1]
-        ]),
-        turn: 0
-    })}
-
-    response.redirect('/yatzy')
-})
 
 export default api

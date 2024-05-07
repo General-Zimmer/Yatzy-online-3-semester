@@ -1,6 +1,6 @@
 async function startNewGame(){
     try {
-        const response = await fetch('/api/gameLogic/newGame');
+        const response = await fetch('/api/gameLogic/startgame');
         if(!response.ok){
             throw new Error('Failed to start a new game')
         } 
@@ -35,3 +35,10 @@ async function rollTheDice(){
         console.error('Error rolling the dice:', error.message);
     }
 }
+
+let buttonNode = document.getElementById('rollButton');
+buttonNode.addEventListener('click', () => {
+    rollTheDice()
+    
+    console.log("Clicked on roll")
+});

@@ -12,7 +12,7 @@ html(lang="en")
           img#dice-holder-4(src="/pics/empty-dice_3.png", alt="Die 5", class="dice_regular")
           img#dice-holder-5(src="/pics/empty-dice_4.png", alt="Die 2", class="dice_regular")
         span#throwDisplay Throw 0
-        button.roll-button Roll!
+        button(id='rollButton') Roll!
       .bottom-container
         #grid-container
           each item, index in ["1's", "2's", "3's", "4's", "5's", "6's", "One pair", "Two pair", "Three same", "Four same", "Full house", "Small straight", "Large straight", "Chance", "Yatzy", "Sum", "Bonus", "Total"]
