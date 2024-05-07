@@ -43,7 +43,7 @@ app.post('/', async (request, response) => {
         const sessionCount = Object.keys(activeSessions).length;
         console.log(`Active sessions: ${sessionCount}`);
 
-        if (sessionCount > 2) {
+        if (sessionCount >= 2) {
             response.redirect('/lobby');
         }
     }
