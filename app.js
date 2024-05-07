@@ -1,9 +1,13 @@
 import express from 'express';
 import session from 'express-session';
-import { v4 as uuidv4 } from 'uuid';
-import api from './api/api.js';
+import playersRouter from './api/api.js';
+import gameRouter from './api/gameLogic.js';
+
 
 const app = express();
+// Middleware der dirigerer anmodninger til vores "router" RESTful api
+app.use('/api/players', playersRouter);
+app.use('/gameLogic', gameRouter);
 
 app.use(express.static('assets'));
 app.use(express.json());
@@ -11,41 +15,66 @@ app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'pug');
 
-
 // Konfiguration af session middleware
 app.use(session({
-    secret: uuidv4(),
+    secret: "Secret_Sauce",
     resave: false,
-    saveUninitialized: true,
-
+    saveUninitialized: true
 }));
-
 
 // Loader pug startsiden
 app.get('/', (request, response) => {
-    response.render('login');
+    response.render('login', {title: "Welcome to yahtzeeeeeeee", knownUser: request.session.isLoggedIn});
 });
-
 
 // HTTP request for at gemme brugernavn, fra request,
 // i session og omdirigerer brugeren til yatzyspillet
-app.post('/', (request, response) => {
+let activeSessions = {}
+
+app.post('/', async (request, response) => {
     const user = request.body.username;
-    request.session.username = user;
-    console.log(`Player session created: ${user}`)
-    response.redirect('/yatzy')
+    if(!request.session.isLoggedIn){
+        request.session.username = user;
+        
+        activeSessions[request.sessionID] = { 
+            username : user, 
+            timestamp: new Date(), 
+            score: 0, 
+            dice: { one: null, two:  null, three: null, four: null, five: null } 
+        }
+        console.log(`Player session created: ${user}`);
+        request.session.isLoggedIn = true;
+    
+        const sessionCount = Object.keys(activeSessions).length;
+        console.log(`Active sessions: ${sessionCount}`);
+
+        if (sessionCount >= 2) {
+            response.redirect('/lobby');
+        }
+    }
+    response.redirect('/yatzy');
 });
 
+app.get('/lobby', (request, response) =>{
+    response.render('lobby');
+});
 
 // Render yatzy pug
 app.get('/yatzy', (request, response) =>{
-    response.render('yatzy')
-})
-
-
-// Middleware der dirigerer anmodninger til vores "router" RESTful api
-app.use('/api', api);
-
+    response.render('yatzy');
+});
+    
+app.get('/logout', (request, response) => {
+    request.session.destroy((err) => {
+        if (err) {
+            console.log(err);
+        }
+        delete activeSessions[request.sessionID]
+        console.log(`Session ${request.sessionID} logged out and removed`)
+        response.redirect('/');
+    });
+}
+);
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");

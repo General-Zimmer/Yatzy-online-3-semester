@@ -4,14 +4,14 @@ export default function randomName() {
 
 
 // Archive of the original code
-/*
+
 export const dices = [
     { value: 0, lockedState: false },
     { value: 0, lockedState: false },
     { value: 0, lockedState: false },
     { value: 0, lockedState: false },
     { value: 0, lockedState: false }
-];*/
+];
 
 
 // Variable for Number of times the 5 dice have been thrown.
@@ -25,7 +25,7 @@ export let roundCount = 0;
 
 
 // Random number generator. Generates a number between 1 and 6
-function getRandomInt() {
+export function getRandomInt() {
     return Math.floor(Math.random() * 6) + 1;
 }
 
