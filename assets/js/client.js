@@ -24,14 +24,14 @@ async function getGameResult(){
     }
 }
 
-async function rollTheDice(){
+async function rollTheDice() {
     try {
         const response = await fetch('/api/gameLogic/rollDice');
         if (!response.ok) {
             throw new Error('Failed to roll the dice');
         }
         const data = await response.json();
-    } catch(error) {
+    } catch (error) {
         console.error('Error rolling the dice:', error.message);
     }
 }

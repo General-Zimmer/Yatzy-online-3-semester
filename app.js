@@ -36,7 +36,12 @@ app.post('/', async (request, response) => {
     if(!request.session.isLoggedIn){
         request.session.username = user;
         
-        activeSessions[request.sessionID] = { username : user, timestamp: new Date() }
+        activeSessions[request.sessionID] = { 
+            username : user, 
+            timestamp: new Date(), 
+            score: 0, 
+            dice: { one: null, two:  null, three: null, four: null, five: null } 
+        }
         console.log(`Player session created: ${user}`);
         request.session.isLoggedIn = true;
     
@@ -63,9 +68,10 @@ app.get('/logout', (request, response) => {
     request.session.destroy((err) => {
         if (err) {
             console.log(err);
-        } else {
-            response.redirect('/');
         }
+        delete activeSessions[request.sessionID]
+        console.log(`Session ${request.sessionID} logged out and removed`)
+        response.redirect('/');
     });
 }
 );

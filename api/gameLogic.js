@@ -1,4 +1,13 @@
 import express from 'express'
+import session from 'express-session';
+const api = express.Router();
+
+api.use(session({
+    secret: "Secret_Sauce",
+    resave: false,
+    saveUninitialized: true
+}));
+
 import { dices, throwCount, roundCount, newRound, newGame, rollDice
         ,getResults } from '../game-logic.js'; 
 
@@ -9,12 +18,15 @@ import { dices, throwCount, roundCount, newRound, newGame, rollDice
         */
 
 
-const api = express.Router();
+
 //api.use()
 
 api.get('/rollDice', (req, res) => {
-    rollDice(dices);
-    res.json({ dices, throwCount });
+    req.session.dice = rollDice(dices);
+
+    res.json({ dice: req.session.dice })
+    console.log(req.sessionID)
+    console.log(req.session.dice)
 });
 
 api.get('/newGame', (req, res) => {
