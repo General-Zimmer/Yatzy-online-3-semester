@@ -82,14 +82,13 @@ function resetThrowCount(dices) {
     * Note: holdStatus[index] is true, if die no. index is hold (for index in [0..4]).
     * remembet to increment throw count after calling this method.
     */
-export function rollDice(dices) {
-    for (let i = 0; i < dices.length; i++) {
-        if (!dices[i].lockedState) {
-            dices[i].value = getRandomInt();
-        }
-    }
-    return dices;
+export function rollDice(dice) {
+    return Object.keys(dice).reduce((result, key) => {
+        result[key] = Math.floor(Math.random() * 6) + 1;
+        return result;
+    }, {});
 }
+
 
 // -------------------------------------------------------------------------
 

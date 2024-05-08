@@ -1,10 +1,18 @@
-import express from 'express';
 import session from 'express-session';
+import express from 'express';
+import activeSessions from './sessionManager.js';
 import playersRouter from './api/api.js';
 import gameRouter from './api/gameLogic.js';
 
 
 const app = express();
+
+// Konfiguration af session middleware
+app.use(session({
+    secret: "Secret_Sauce",
+    resave: false,
+    saveUninitialized: false
+}));
 // Middleware der dirigerer anmodninger til vores "router" RESTful api
 app.use('/api/players', playersRouter);
 app.use('/gameLogic', gameRouter);
@@ -15,33 +23,43 @@ app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'pug');
 
-// Konfiguration af session middleware
-app.use(session({
-    secret: "Secret_Sauce",
-    resave: false,
-    saveUninitialized: true
-}));
+
+app.use((req, res, next) => {
+    console.log(`Session ID: ${req.session.id}, Initiated: ${req.session.initiated}`);
+    next();
+});
 
 // Loader pug startsiden
 app.get('/', (request, response) => {
     response.render('login', {title: "Welcome to yahtzeeeeeeee", knownUser: request.session.isLoggedIn});
 });
 
+app.get('/ayo', (request, response) => {
+    response.send(activeSessions[request.session.id])
+})
+
 // HTTP request for at gemme brugernavn, fra request,
 // i session og omdirigerer brugeren til yatzyspillet
-let activeSessions = {}
 
 app.post('/', async (request, response) => {
     const user = request.body.username;
     if(!request.session.isLoggedIn){
         request.session.username = user;
+
+        activeSessions[request.session.id] = {
+            id: request.session.id,
+            username: user,
+            timestamp: new Date(),
+            score: 0,
+            dice: [
+                { value: 0, lockedState: false },
+                { value: 0, lockedState: false },
+                { value: 0, lockedState: false },
+                { value: 0, lockedState: false },
+                { value: 0, lockedState: false }
+            ]
+        };
         
-        activeSessions[request.sessionID] = { 
-            username : user, 
-            timestamp: new Date(), 
-            score: 0, 
-            dice: { one: null, two:  null, three: null, four: null, five: null } 
-        }
         console.log(`Player session created: ${user}`);
         request.session.isLoggedIn = true;
     
@@ -69,8 +87,8 @@ app.get('/logout', (request, response) => {
         if (err) {
             console.log(err);
         }
-        delete activeSessions[request.sessionID]
-        console.log(`Session ${request.sessionID} logged out and removed`)
+        delete activeSessions[request.session.id]
+        console.log(`Session ${request.session.id} logged out and removed`)
         response.redirect('/');
     });
 }
