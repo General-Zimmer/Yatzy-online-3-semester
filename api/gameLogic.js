@@ -1,11 +1,12 @@
-import express from 'express'
 import session from 'express-session';
+import activeSessions from '../sessionManager.js';
+import express from 'express'
 const api = express.Router();
 
 api.use(session({
     secret: "Secret_Sauce",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false
 }));
 
 import { dices, throwCount, roundCount, newRound, newGame, rollDice
@@ -20,14 +21,40 @@ import { dices, throwCount, roundCount, newRound, newGame, rollDice
 
 
 //api.use()
-
-api.get('/rollDice', (req, res) => {
-    req.session.dice = rollDice(dices);
-
-    res.json({ dice: req.session.dice })
-    console.log(req.sessionID)
-    console.log(req.session.dice)
+/*
+api.use((req, res, next) => {
+    if (!req.session.initiated) {
+        req.session.initiated = true;
+        activeSessions[req.session.id] = {
+            dice: [
+                { value: 0, lockedState: false },
+                { value: 0, lockedState: false },
+                { value: 0, lockedState: false },
+                { value: 0, lockedState: false },
+                { value: 0, lockedState: false }
+            ],
+            otherData: {}
+        };
+    }
+    next();
 });
+*/
+api.get('/rollDice', (request, response) => {
+    console.log("Checking session:", request.session.id);
+    console.log("Current active sessions:", Object.keys(activeSessions));
+    const sessionData = activeSessions[request.session.id];
+
+    if (!sessionData || !sessionData.dice) {
+        console.error('Session data or dice not found for ID:', request.session.id, sessionData);
+        return response.status(404).json({ error: 'Active session or dice not found' });
+    }
+
+    sessionData.dice = rollDice(sessionData.dice);
+    response.json({ dice: sessionData.dice });
+});
+
+
+
 
 api.get('/newGame', (req, res) => {
     newGame();
