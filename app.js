@@ -17,7 +17,6 @@ app.use(session({
     secret: uuidv4(),
     resave: false,
     saveUninitialized: true,
-
 }));
 
 

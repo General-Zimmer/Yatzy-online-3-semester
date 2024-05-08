@@ -140,11 +140,10 @@ export default api
 api.post('/starttestgame', async (request, response) => {
 
     request.session.gameID = 123
-    request.session.currentPlayer = 0
-    
-    let names = ['Rollo', 'Susan']
-    request.session.players = []
-    for (let i = 0; i < names.length; i++) {
+    //request.session.currentPlayer = 0
+    //let names = ['Rollo', 'Susan']
+    //request.session.players = []
+    /*for (let i = 0; i < names.length; i++) {
         session.players.push({
             name: names[i], 
             dices: [
@@ -172,7 +171,8 @@ api.post('/starttestgame', async (request, response) => {
         [yatzy, -1]
         ]),
         turn: 0
-    })}
-
-    response.redirect('/yatzy')
+    })}*/
+    console.log(request.session.gameID)
+    response.send(gameID)
+    //response.redirect('/yatzy')
 })
