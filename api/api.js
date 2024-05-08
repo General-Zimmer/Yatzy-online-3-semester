@@ -134,3 +134,45 @@ api.post('/throw', async (request, response) => {
 })
 
 export default api
+
+
+// Game Session initializer for testing witn two players
+api.post('/starttestgame', async (request, response) => {
+
+    request.session.gameID = 123
+    request.session.currentPlayer = 0
+    
+    let names = ['Rollo', 'Susan']
+    request.session.players = []
+    for (let i = 0; i < names.length; i++) {
+        session.players.push({
+            name: names[i], 
+            dices: [
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false }
+        ], 
+        results: new  Map([
+        [one, -1],
+        [two, -1],
+        [three, -1],
+        [four, -1],
+        [five, -1],
+        [six, -1],
+        [onePair, -1],
+        [twoPairs, -1],
+        [threeSame, -1],
+        [fourSame, -1],
+        [fullHouse, -1],
+        [smallStraight, -1],
+        [largeStraight, -1],
+        [chance, -1],
+        [yatzy, -1]
+        ]),
+        turn: 0
+    })}
+
+    response.redirect('/yatzy')
+})
