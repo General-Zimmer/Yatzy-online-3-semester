@@ -67,23 +67,33 @@ app.post('/', async (request, response) => {
         
         console.log(`Player session created: ${user}`);
         request.session.isLoggedIn = true;
-    
-        const sessionCount = Object.keys(activeSessions).length;
-        console.log(`Active sessions: ${sessionCount}`);
 
-        if (sessionCount > 2) {
-            response.redirect('/lobby');
-        }
+
     }
     response.redirect('/yatzy');
 });
 
-app.get('/lobby', (request, response) =>{
-    response.render('lobby');
+// Middleware til at sikkerhedstjekke
+function checkIfAuthenticated(request, response, next) {
+    if (!request.session.isLoggedIn) {
+        console.log("You are not authenticated");
+        return response.status(401).json({ error: 'Not authenticated' });
+    }
+    next()
+}
+
+app.get('/lobby', checkIfAuthenticated, (request, response) =>{
+    const sessionCount = Object.keys(activeSessions).length;
+    response.render("lobby")
 });
 
 // Render yatzy pug
-app.get('/yatzy', (request, response) =>{
+app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
+    const sessionCount = Object.keys(activeSessions).length;
+
+    if (sessionCount > 2) {
+        return response.redirect('/lobby');
+    }
     response.render('yatzy');
 });
     
