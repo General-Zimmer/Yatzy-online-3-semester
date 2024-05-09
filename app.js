@@ -45,7 +45,7 @@ app.get('/ayo', (request, response) => {
 // HTTP request for at hente brugernavn fra request body og lave en ny session.
 // Klient redirected til spillet hvis der er plads til en ny spiller. Hvis ikke, bliver klienten redirected til lobby
 app.post('/', async (request, response) => {
-    const user = request.body.username;
+    const user = request.body.Spiller;
     if(!request.session.isLoggedIn){
         request.session.username = user;
 
