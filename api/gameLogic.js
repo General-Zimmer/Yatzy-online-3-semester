@@ -12,6 +12,8 @@ api.use(session({
 import { dices, throwCount, roundCount, newRound, newGame, rollDice
         ,getResults } from '../game-logic.js'; 
 
+        // Nedenstående er imports vi skal bruge senere
+
         /*sameValuePoints, onePairPoints, twoPairPoints
         ,threeSamePoints, fourSamePoints, fullHousePoints
         ,largeStraightPoints, chancePoints, yatzyPoints 
@@ -19,41 +21,23 @@ import { dices, throwCount, roundCount, newRound, newGame, rollDice
         */
 
 
-
-//api.use()
-/*
-api.use((req, res, next) => {
-    if (!req.session.initiated) {
-        req.session.initiated = true;
-        activeSessions[req.session.id] = {
-            dice: [
-                { value: 0, lockedState: false },
-                { value: 0, lockedState: false },
-                { value: 0, lockedState: false },
-                { value: 0, lockedState: false },
-                { value: 0, lockedState: false }
-            ],
-            otherData: {}
-        };
-    }
-    next();
-});
-*/
 api.get('/rollDice', (request, response) => {
+    // Debugging, bare ignorer
     console.log("Checking session:", request.session.id);
     console.log("Current active sessions:", Object.keys(activeSessions));
-    const sessionData = activeSessions[request.session.id];
 
+
+    const sessionData = activeSessions[request.session.id];
     if (!sessionData || !sessionData.dice) {
         console.error('Session data or dice not found for ID:', request.session.id, sessionData);
         return response.status(404).json({ error: 'Active session or dice not found' });
     }
 
+    sessionData.throwCount++
     sessionData.dice = rollDice(sessionData.dice);
-    response.json({ dice: sessionData.dice });
+    // Hvad vil vi gerne have klienten skal modtage, når de kalder på dette endpoint?
+    response.json({ id: request.session.id, dice: sessionData.dice, throwCount: sessionData.throwCount });
 });
-
-
 
 
 api.get('/newGame', (req, res) => {

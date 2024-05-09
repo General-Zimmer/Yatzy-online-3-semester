@@ -3,6 +3,8 @@ import fs from 'fs'
 
 const api = express.Router();
 
+// Jeg tænker at dette er forbeholdt til vores storage, da data bliver slettet når en session udløber.
+// Så kan vi nemlig gå tilbage i vores "database" og se stats fra tidligere kampe
 
 async function getPlayers(){
     let players = await fs.promises.readFile('./players.json', {encoding: 'UTF-8'})

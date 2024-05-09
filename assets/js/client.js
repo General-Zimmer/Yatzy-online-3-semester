@@ -1,3 +1,5 @@
+// Forbeholdt til klienter der fetcher data via endpoints
+
 async function startNewGame(){
     try {
         const response = await fetch('/api/gameLogic/startgame');
