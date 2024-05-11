@@ -2,79 +2,9 @@ export default function randomName() {
     console.log("object");
 }
 
-
-// Archive of the original code
-/*
-export const dices = [
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false }
-];*/
-
-
-// Variable for Number of times the 5 dice have been thrown.
-
-// 0 <= throwCount <= 3.
-export let throwCount = 0;
-
-// Variable for roundCount
-
-export let roundCount = 0;
-
-
 // Random number generator. Generates a number between 1 and 6
 function getRandomInt() {
     return Math.floor(Math.random() * 6) + 1;
-}
-
-//leaving this unaltered for now
-export function newRound() { 
-    resetDices();
-    resetThrowCount();
-}
-
-//leaving this unaltered for now
-export function newGame() {
-    throwCount = 0;
-    roundCount = 0;
-    resetDices();
-}
-
-/**
- * 
- * @param {*} dices 
- * @returns reinitialized dices
- */
-function resetDices(dices) {
-    for (let i = 0; i < dices.length; i++) {
-        dices[i].value = 0;
-        dices[i].lockedState = false;
-    }
-    return dices;
-}
-
-/** method archived for now
-    * Reset the throw count.
-    
-export function resetThrowCount() {
-    throwCount = 0;
-    roundCount++;
-    for (let i = 0; i < dices.length; i++) {
-        dices[i].value = 0;
-    }
-    return dices;
-}*/
-/**New version of the above method
-    * sets dice values to 0 call this method to reset trow count.
-    * remember to reset the throw count when calling this method.
-    */
-   //Not sure this method is needed
-function resetThrowCount(dices) {
-    for (let i = 0; i < dices.length; i++) {
-        dices[i].value = 0;
-    }
 }
 
 /**
@@ -98,7 +28,7 @@ export function rollDice(dices) {
 // Index 0 is not used.
 // Note: This method can be used in several of the following methods.
 
-export function frequency(dices) {
+function frequency(dices) {
     let currentFrequency = [0, 0, 0, 0, 0, 0, 0];
     for (let i = 0; i < dices.length; i++) {
         let yeetnumber = dices[i].value;
@@ -113,7 +43,7 @@ export function frequency(dices) {
      * Pre: 1 <= value <= 6;
      */
 
-export function sameValuePoints(value, dices) {
+function sameValuePoints(value, dices) {
     let frequencies = frequency(dices);
     let sameValuePoints = frequencies[value] * value;
     return sameValuePoints;
@@ -124,7 +54,7 @@ export function sameValuePoints(value, dices) {
  * Return points for one pair (for the face value giving the highest points).<br/>
  * Return 0, if there aren't 2 dice with the same face value.
  */
-export function onePairPoints(dices) {
+function onePairPoints(dices) {
     let frequencies = frequency(dices);
     let pairPoints = 0;
     for (let i = 6; i >= 1; i--) {
@@ -143,7 +73,7 @@ export function onePairPoints(dices) {
  * Return 0, if there aren't 2 dice with the same face value<br/>
  * and 2 other dice with the same but different face value.
  */
-export function twoPairPoints(dices) {
+function twoPairPoints(dices) {
     let frequencies = frequency(dices);
     let lowerPairPoints = 0;
     let highestPairPoints = onePairPoints(dices);
@@ -165,13 +95,11 @@ export function twoPairPoints(dices) {
 }
 
 
-
-
 /**
  * Return points for 3 of a kind.<br/>
  * Return 0, if there aren't 3 dice with the same face value.
  */
-export function threeSamePoints(dices) {
+function threeSamePoints(dices) {
     let frequencies = frequency(dices);
     let triplePoints = 0;
     for (let i = 1; i <= 6; i++) {
@@ -187,7 +115,7 @@ export function threeSamePoints(dices) {
  * Return points for 4 of a kind.<br/>
  * Return 0, if there aren't 4 dice with the same face value.
  */
-export function fourSamePoints(dices) {
+function fourSamePoints(dices) {
     let frequencies = frequency(dices);
     let quadruplePoints = 0;
     for (let i = 1; i <= 6; i++) {
@@ -248,7 +176,7 @@ function smallStraightPoints(dices) {
  * Return points for large straight.<br/>
  * Return 0, if the dice aren't showing 2,3,4,5,6.
  */
-export function largeStraightPoints(dices) {
+function largeStraightPoints(dices) {
     let frequencies = frequency(dices);
     let haveLargeStraight = true;
     let bigStraight = 0;
@@ -267,7 +195,7 @@ export function largeStraightPoints(dices) {
  * Return points for chance (the sum of face values).
  */
 
-export function chancePoints(dices) {
+function chancePoints(dices) {
     let frequencies = frequency(dices);
     let sum = 0;
     for (let i = 1; i <= 6; i++) {
@@ -281,7 +209,7 @@ export function chancePoints(dices) {
  * Return 0, if there aren't 5 dice with the same face value.
  */
 
-export function yatzyPoints(dices) {
+function yatzyPoints(dices) {
     let frequencies = frequency(dices);
     let yatzy = 0;
     for (let i = 1; i <= 6; i++) {
@@ -309,18 +237,3 @@ export function getResults(dices) {
 
     return results;
 }
-
-// for testing
-function main(){
-    let dices = [
-        { value: 1, lockedState: false },
-        { value: 2, lockedState: false },
-        { value: 3, lockedState: false },
-        { value: 4, lockedState: true },
-        { value: 5, lockedState: true }
-    ];
-    console.log(dices.length)
-    let results = getResults(dices);
-    console.log(results);
-}
-//main();
