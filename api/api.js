@@ -72,6 +72,7 @@ api.post('/add-player', async (request, response) => {
     }
 });
 
+
 api.post('/startgame', async (request, response) => {
 
     request.session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
@@ -117,6 +118,13 @@ api.post('/startgame', async (request, response) => {
 
     response.redirect('/yatzy')
 })
+
+/*
+* API endpoint for ending the turn by selecting a score field
+* Request: JSON object with the key and value of the selected score field
+* Response: JSON object with the updated results array - perhaps this sould just be an OK response
+* Updates the results of the current player in the session
+*/
 api.post('/endTurn', async (request, response) => {
     //Get the selected score field from the request
     let key = request.body.key
@@ -131,32 +139,37 @@ api.post('/endTurn', async (request, response) => {
     //Send a response
     response.json(sessionResults) //Just for test - maybe add something usefull later
 })
+
+/*
+* API endpoint for throwing the dice
+* Request: JSON object with the lockedState array
+* Response: JSON object with the dices array, throwCount and results array
+* Updates the throw count and dice of the current player
+*/
 api.post('/throw', async (request, response) => {
     //Increment the players throw count - Perhaps there sould be some error handeling here
     request.session.players[request.session.currentPlayer].throwCount++
+    
     //Get dice locked state from the request
     let lockedState = request.body.lockedState
+    
     //Get the game data from the session
-    let currentPlayer = request.session.currentPlayer //Need to implement this somehow
+    let currentPlayer = request.session.currentPlayer
     let dices = request.session.players[currentPlayer].dices
     let throwCount = request.session.players[currentPlayer].throwCount
 
-    //Consider simplifying this to just the dices
+    //Roll the dice
     for (let i = 0; i < dices.length; i++) {
         dices[i].lockedState = lockedState[i]
     }
     dices = gameLogic.rollDice(dices)
     let results = gameLogic.getResults(dices)
     
-
-    response.json({ dices : dices, throwCount : throwCount, results : results}) //Send current player also?
-
+    //Send a response
+    response.json({ dices : dices, throwCount : throwCount, results : results})
 })
 
-export default api
-
-
-// Game Session initializer for testing witn two players
+// Game Session initializer for testing with two players - not ment to be a final version
 api.get('/starttestgame', async (request, response) => {
     request.session.gameID = Math.floor(Math.random() * 1000)
     request.session.currentPlayer = 0
@@ -198,6 +211,5 @@ api.get('/starttestgame', async (request, response) => {
     response.redirect('/yatzy')
 })
 
-api.get('/session', async (request, response) => {
-    response.json(request.session.players[request.session.currentPlayer].results)
-})
+export default api
+

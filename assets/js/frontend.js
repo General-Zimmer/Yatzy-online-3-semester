@@ -41,17 +41,6 @@ async function rollButton() {
         alert("Du har låst alle terninger, aflås en for at rulle");
         return;
     }
-    /* Move this outside of the function
-    if (gameLogic.roundCount == 15) {
-        if (window.confirm("Spillet er slut, vil du starte et nyt spil?")) {
-            restartGame();
-        } else {
-            return;
-        }
-    }
-    if (gameLogic.throwCount == 3) {
-        return;
-    }*/
     
     //Delay while fetching the new dice values. See old code below
     //const delay = ms => new Promise(res => setTimeout(res, ms));
@@ -72,7 +61,7 @@ async function rollButton() {
 
             let diceValue = gameDataJSON.dices[i-1];
             console.log(diceValue)
-
+            diceHolders[i].src = `./assets/dice-animation/dice_animation_${i}.gif`;
         }
     }
 
@@ -148,11 +137,16 @@ function updateThrowCount(throwCount) {
     throwDisplay.textContent = `Throw ${throwCount}`;
 }
 
+
 function lockDice(event) {
-    /* Need a way to implement this, maybbe a new state variable?
-    if (gameLogic.throwCount == 0) {
+    // Check if the player is allowed to lock dice
+    let throwDisplay = document.getElementById("throwDisplay");
+    let turn = throwDisplay.textContent.split(" ")[1];
+    if (turn == 0) {
+        alert("Du har ikke kastet endnu");
         return;
-    }*/
+    }
+
     let index = event.target.id.split("-")[2];
     if (lockedState[index - 1]) {
         lockedState[index - 1] = false;
@@ -161,15 +155,6 @@ function lockDice(event) {
         event.target.className = "lockedDice";
         lockedState[index - 1] = true;
     }
-    /* Old code left for reference, since I do not understand it.
-    if (gameLogic.dices[index - 1].lockedState) {
-        gameLogic.dices[index - 1].lockedState = false;
-        event.target.className = "dice_regular";
-    } else {
-        event.target.className = "lockedDice";
-        gameLogic.dices[index - 1].lockedState = true;
-    }*/
-
 }
 
 // Checks if all dices are locked, call before rolling
@@ -185,20 +170,21 @@ function checkAllDicesLocked() {
 
 async function lockScoreField(event) {
     if (canLockScoreField) {
+        // Prevent user form clicking another field
         canLockScoreField = false;
 
+        // Lock the field and get the key and value
         let field = event.target;
-        field.className = "inputSelected"; // What does this do? - It prevents the feild from being clicked again and locks the value
+        field.className = "inputSelected"; // See updateScoreFields
         let key = field.id;
         let value = field.value; // Is this needed? - perhaps the server should handle the value?
-        
-        //Update UI - fix the methods one by one
-        //resetDices();
-        //Something somethings turns
 
         //API call to server
         let response = await postData('http://localhost:8000/api/endTurn', {key: key, value: value});
         
+        // Do stuff with the response
+        // Stuff like switching player or ending the game
+
         canRoll = true;
     }
 }
@@ -234,12 +220,5 @@ function updateSumAndBonusAndTotal() {
     let totalSum = sumAmount + extraSum + parseInt(bonusField.value);
 
     document.getElementById("total").value = totalSum;
-}
-
-//Commented out gamelogic
-//Need to agree on how to implement this
-function restartGame() {
-    //gameLogic.newGame();
-    //location.reload();
 }
 
