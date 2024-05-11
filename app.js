@@ -5,19 +5,19 @@ import api from './api/api.js';
 
 const app = express();
 
-app.use(express.static('assets'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.set('view engine', 'pug');
-
-
 // Konfiguration af session middleware
+// Moved up
 app.use(session({
     secret: uuidv4(),
     resave: false,
     saveUninitialized: true,
 }));
+
+app.use(express.static('assets'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.set('view engine', 'pug');
 
 
 // Loader pug startsiden

@@ -146,7 +146,7 @@ export function onePairPoints(dices) {
 export function twoPairPoints(dices) {
     let frequencies = frequency(dices);
     let lowerPairPoints = 0;
-    let highestPairPoints = onePairPoints();
+    let highestPairPoints = onePairPoints(dices);
     let doublePairPoints = 0;
     if (highestPairPoints !== 0) {
         for (let i = 6; i >= 1; i--) {
@@ -206,7 +206,7 @@ export function fourSamePoints(dices) {
 function fullHousePoints(dices) {
     let frequencies = frequency(dices);
     let pairPoints = 0;
-    let triplePoints = threeSamePoints();
+    let triplePoints = threeSamePoints(dices);
     let fullHouse = 0;
     if (triplePoints !== 0) {
         for (let i = 1; i <= 6; i++) {
@@ -309,3 +309,18 @@ export function getResults(dices) {
 
     return results;
 }
+
+// for testing
+function main(){
+    let dices = [
+        { value: 1, lockedState: false },
+        { value: 2, lockedState: false },
+        { value: 3, lockedState: false },
+        { value: 4, lockedState: true },
+        { value: 5, lockedState: true }
+    ];
+    console.log(dices.length)
+    let results = getResults(dices);
+    console.log(results);
+}
+//main();

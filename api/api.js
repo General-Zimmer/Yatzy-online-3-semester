@@ -1,8 +1,8 @@
 import express from 'express'
 import fs from 'fs'
+import * as gameLogic from './game-logic.js'
 
 const api = express.Router();
-
 
 async function getPlayers(){
     let players = await fs.promises.readFile('./players.json', {encoding: 'UTF-8'})
@@ -18,7 +18,7 @@ async function savePlayer(data = {}){
 
 
 // Hent alle spillere
-api.get('/', async (request, response) => {
+api.get('/p', async (request, response) => {
     try {
         const players = await getPlayers()
         response.json(players)
@@ -28,6 +28,7 @@ api.get('/', async (request, response) => {
 })
 
 // Hent specifik spiller
+/* '/:ign'
 api.get('/:ign', async (request, response) => {
     try{
     const players = await getPlayers()
@@ -41,6 +42,7 @@ api.get('/:ign', async (request, response) => {
     response.status(500).json({ message: error.message })
 }
 })
+*/
 
 
 // Tilføj ny spiller
@@ -115,37 +117,87 @@ api.post('/startgame', async (request, response) => {
 
     response.redirect('/yatzy')
 })
+api.post('/endTurn', async (request, response) => {
+    //Get the selected score field from the request
+    let key = request.body.key
+    let value = request.body.value
+    
+    //Update the results in the session
+    let sessionResults = request.session.players[request.session.currentPlayer].results
+    let results = new Map(sessionResults)
+    results.set(key, value)
+    sessionResults = Array.from(results.entries()) //Map is not JSON serializable
 
+    //Send a response
+    response.json(sessionResults) //Just for test - maybe add something usefull later
+})
 api.post('/throw', async (request, response) => {
+    //Increment the players throw count - Perhaps there sould be some error handeling here
+    request.session.players[request.session.currentPlayer].throwCount++
+    //Get dice locked state from the request
+    let lockedState = request.body.lockedState
     //Get the game data from the session
     let currentPlayer = request.session.currentPlayer //Need to implement this somehow
     let dices = request.session.players[currentPlayer].dices
     let throwCount = request.session.players[currentPlayer].throwCount
-    for (let i = 0; i < dices.length; i++) {
-        if (!dices[i].lockedState) {
-            dices[i].value = Math.floor(Math.random() * 6) + 1
-        }
-    }
-    request.session.players[request.session.currentPlayer].throwCount++
-    console.log(dices)
-    consolse.log(request.session.players[request.session.currentPlayer].dices)
 
-    response.json({ dices: dices, throwCount: throwCount }) //Send current player also?
+    //Consider simplifying this to just the dices
+    for (let i = 0; i < dices.length; i++) {
+        dices[i].lockedState = lockedState[i]
+    }
+    dices = gameLogic.rollDice(dices)
+    let results = gameLogic.getResults(dices)
+    
+
+    response.json({ dices : dices, throwCount : throwCount, results : results}) //Send current player also?
+
 })
 
 export default api
 
 
 // Game Session initializer for testing witn two players
-api.post('/starttestgame', async (request, response) => {
+api.get('/starttestgame', async (request, response) => {
+    request.session.gameID = Math.floor(Math.random() * 1000)
+    request.session.currentPlayer = 0
+    request.session.players = []
 
-    request.session.gameID = 123
+    let names = ['Player 1', 'Player 2']
 
-    console.log(request.session.gameID)
+    for (let i = 0; i < names.length; i++) {
+        let resultsMap = new Map ([
+            ["1's", 0],
+            ["2's", 0],
+            ["3's", 0],
+            ["4's", 0],
+            ["5's", 0],
+            ["6's", 0],
+            ["One Pair", 0],
+            ["Two Pairs", 0],
+            ["Three Same", 0],
+            ["Four Same", 0],
+            ["Full House", 0],
+            ["Small Straight", 0],
+            ["Large Straight", 0],
+            ["Chance", 0],
+            ["Yatzy", 0]
+        ])
 
-    response.redirect('http://localhost:8000/yatzy')
+        request.session.players.push({
+            name: names[i], 
+            dices: [
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false },
+            { value: 0, lockedState: false }
+            ], 
+            results: Array.from(resultsMap.entries()),
+            throwCount: 0
+    })}
+    response.redirect('/yatzy')
 })
 
-api.get('/getTest', async (request, response) => {
-    response.redirect('http://localhost:8000/yatzy')
+api.get('/session', async (request, response) => {
+    response.json(request.session.players[request.session.currentPlayer].results)
 })

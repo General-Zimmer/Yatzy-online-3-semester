@@ -1,6 +1,4 @@
-
-
-// Basic game logic for front-end (Advanced logic in Game-logic file)
+// Basic game logic for front-end (Advanced logic in game-logic file)
 let canLockScoreField = false;
 
 let canRoll = true;
@@ -14,8 +12,8 @@ let rollBtn = document.querySelector(".roll-button");
 
 let diceImages = document.getElementsByTagName("img");
 
-updateScoreFields();
-updateSumAndBonusAndTotal();
+/*updateScoreFields(); Remove this later
+updateSumAndBonusAndTotal();*/
 
 // Adding event listeners
 
@@ -34,8 +32,9 @@ for (let i = 0; i < inputfields.length; i++) {
 }
 
 async function rollButton() {
-    // Check if the player id allowed to roll
+    // Check if the player is allowed to roll
     if (!canRoll) {
+        alert("Du har ikke flere kast tilbage");
         return;
     }
     if (checkAllDicesLocked()) {
@@ -54,11 +53,11 @@ async function rollButton() {
         return;
     }*/
     
-    //Delay while fetching the new dice values.
-    const delay = ms => new Promise(res => setTimeout(res, ms));
+    //Delay while fetching the new dice values. See old code below
+    //const delay = ms => new Promise(res => setTimeout(res, ms));
 
     //Fetching from server - POST
-    let gameDataJSON = await postData('http://localhost:8000/throw',lockedState)
+    let gameDataJSON = await postData('http://localhost:8000/api/throw',{lockedState: lockedState})
 
     //Locking
     canRoll = false;
@@ -68,17 +67,12 @@ async function rollButton() {
     let diceHolders = [];
     for (let i = 1; i < 6; i++) {
         diceHolders[i] = document.getElementById(`dice-holder-${i}`);
+        
+        if (!gameDataJSON.dices[i-1].lockedState){
 
-        if (!lockedState[i - 1]) {
-            const setPermanentDiceValue = async (j) => {
-                diceHolders[j].src = `./assets/dice-animation/dice_animation_${j}.gif`;
+            let diceValue = gameDataJSON.dices[i-1];
+            console.log(diceValue)
 
-                let diceValue = gameDataJSON.dices[0];
-
-                await delay(2000);
-                diceHolders[j].src = `./assets/die_${diceValue}.png`;
-            };
-            setPermanentDiceValue(i);
         }
     }
 
@@ -99,7 +93,7 @@ async function rollButton() {
         }
     }
     */
-    await delay(2100);
+    //await delay(2100);
     updateThrowCount(gameDataJSON.throwCount);
     updateScoreFields(gameDataJSON.results);
 
@@ -123,8 +117,9 @@ async function postData(url, data={}){
         },
         body: JSON.stringify(data)
     })
-    
+
     let gameData = await response.json();
+    console.log(gameData) //For test remove later
     //Maby some error handling here
     return gameData;
 }
@@ -188,17 +183,23 @@ function checkAllDicesLocked() {
     return allDicesLocked;
 }
 
-function lockScoreField(event) {
+async function lockScoreField(event) {
     if (canLockScoreField) {
-        let field = event.target;
-        field.className = "inputSelected";
-        updateSumAndBonusAndTotal();
         canLockScoreField = false;
-        /*gameLogic.newRound(); Need to implement this
-        updateThrowCount();
-        resetDices();*/
-        //Need to make this a api call
-        updateScoreFields();
+
+        let field = event.target;
+        field.className = "inputSelected"; // What does this do? - It prevents the feild from being clicked again and locks the value
+        let key = field.id;
+        let value = field.value; // Is this needed? - perhaps the server should handle the value?
+        
+        //Update UI - fix the methods one by one
+        //resetDices();
+        //Something somethings turns
+
+        //API call to server
+        let response = await postData('http://localhost:8000/api/endTurn', {key: key, value: value});
+        
+        canRoll = true;
     }
 }
 
@@ -236,7 +237,9 @@ function updateSumAndBonusAndTotal() {
 }
 
 //Commented out gamelogic
+//Need to agree on how to implement this
 function restartGame() {
     //gameLogic.newGame();
-    location.reload();
+    //location.reload();
 }
+
