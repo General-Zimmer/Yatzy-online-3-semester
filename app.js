@@ -3,10 +3,10 @@ import session from 'express-session';
 import { v4 as uuidv4 } from 'uuid';
 import api from './api/api.js';
 
+
 const app = express();
 
 // Konfiguration af session middleware
-// Moved up
 app.use(session({
     secret: uuidv4(),
     resave: false,

@@ -1,6 +1,7 @@
 import express from 'express'
 import fs from 'fs'
 import * as gameLogic from './game-logic.js'
+import path from 'path'
 
 const api = express.Router();
 
@@ -169,6 +170,26 @@ api.post('/throw', async (request, response) => {
     response.json({ dices : dices, throwCount : throwCount, results : results})
 })
 
+/**
+ * API endpoint for .png image paths
+ * Request: The name of the image file
+ * Response: The image file
+ */
+//C:\Users\1e4e5\Desktop\DIP\Yatzy-online-3-semester\assets\pics
+api.get('/assets/pics/:name', (request, response) => {
+    console.log(request.params.name)
+    let filePath = path.join(__dirname, '../assets/pics/', request.params.name)
+    console.log(filePath)
+    fs.readFile(filePath, (error, data) => {
+        if (error) {
+            response.status(404).json({ message: error.message })
+        } else {
+            response.writeHead(200, { 'Content-Type': 'image/png' })
+            response.end(data)
+        }
+    })
+})
+
 // Game Session initializer for testing with two players - not ment to be a final version
 api.get('/starttestgame', async (request, response) => {
     request.session.gameID = Math.floor(Math.random() * 1000)
@@ -212,4 +233,3 @@ api.get('/starttestgame', async (request, response) => {
 })
 
 export default api
-
