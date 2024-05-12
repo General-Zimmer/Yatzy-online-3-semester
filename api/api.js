@@ -176,7 +176,7 @@ api.post('/throw', async (request, response) => {
  * Response: The image file
  */
 //C:\Users\1e4e5\Desktop\DIP\Yatzy-online-3-semester\assets\pics
-api.get('/assets/pics/:name', (request, response) => {
+/*api.get('/assets/pics/:name', (request, response) => {
     console.log(request.params.name)
     let filePath = path.join(__dirname, '../assets/pics/', request.params.name)
     console.log(filePath)
@@ -188,7 +188,7 @@ api.get('/assets/pics/:name', (request, response) => {
             response.end(data)
         }
     })
-})
+})*/
 
 // Game Session initializer for testing with two players - not ment to be a final version
 api.get('/starttestgame', async (request, response) => {

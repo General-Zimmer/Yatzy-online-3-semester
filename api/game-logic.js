@@ -1,7 +1,3 @@
-export default function randomName() {
-    console.log("object");
-}
-
 // Random number generator. Generates a number between 1 and 6
 function getRandomInt() {
     return Math.floor(Math.random() * 6) + 1;
