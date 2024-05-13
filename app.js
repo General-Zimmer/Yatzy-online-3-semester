@@ -25,12 +25,6 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'pug');
  
 
-// Middleware kun brugt til at teste, ikke vigtig
-app.use((req, res, next) => {
-    //console.log(`Session ID: ${req.session.id}, Initiated: ${req.session.initiated}`);
-    next();
-});
-
 // Loader pug startsiden
 app.get('/', (request, response) => {
     response.render('login', {title: "Welcome to yahtzeeeeeeee", knownUser: request.session.isLoggedIn});
@@ -73,7 +67,7 @@ app.get('/lobby', checkIfAuthenticated, (request, response) =>{
 // Render yatzy pug
 app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
 
-    response.render('yatzy');
+    response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
     
 app.get('/logout', (request, response) => {
