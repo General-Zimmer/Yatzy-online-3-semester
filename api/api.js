@@ -195,8 +195,8 @@ api.post('/throw', async (request, response) => {
  * Response: Status code
  */
 api.post('/lock', async (request, response) => {
-    let JSONIndex = JSON.parse(request.body.index)
-    let index = JSONIndex.Index
+    console.log(request.body);
+    let index = request.body.index
     let dices = request.session.players[request.session.currentPlayer].dices
     dices[index].lockedState = !dices[index].lockedState
     console.log(dices[index].lockedState)

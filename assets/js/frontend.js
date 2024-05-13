@@ -94,7 +94,7 @@ async function rollButton() {
 }
 
 // Fetch function for POST-ing JSON data
-async function postData(url, data={}, dataname=""){
+async function postData(url, data={}){
     const response = await fetch(url, {
         method: "POST",
         mode: "cors",
@@ -147,7 +147,7 @@ async function lockDice(event) {
     let index = event.target.id.split("-")[2];
     console.log(index);
 
-    let response = await postData('http://localhost:8000/api/lock', {Index: index}, "index");
+    let response = await postData('http://localhost:8000/api/lock', {Index: index});
 
     if (response.status == 200) {
         if (className == "dice_regular") {
