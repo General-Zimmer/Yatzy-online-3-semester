@@ -148,9 +148,11 @@ async function lockDice(event) {
 // Checks if all dices are locked, call before rolling
 function checkAllDicesLocked() {
     let allDicesLocked = true;
-    for (let i = 0; i < lockedState.length; i++) {
-        if (!lockedState[i]) {
-            allDicesLocked = false;
+    let diceHolders = [];
+    for (let i = 1; i < 6; i++) {
+        diceHolders[i] = document.getElementById(`dice-holder-${i}`);
+        if (diceHolders[i].className == "dice_regular") {
+            return false;
         }
     }
     return allDicesLocked;

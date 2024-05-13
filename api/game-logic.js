@@ -30,7 +30,7 @@ function frequency(dices) {
         let yeetnumber = dices[i].value;
         currentFrequency[yeetnumber]++;
     }
-    return currentFrequency;
+    return currentFrequency
 }
 
 /**
