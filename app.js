@@ -1,8 +1,5 @@
 import session from 'express-session';
 import express from 'express';
-import activeSessions from './sessionManager.js';
-//import playersRouter from './api/api.js';
-//import gameRouter from './api/gameLogic.js';
 import api from './api/api.js';
 
 

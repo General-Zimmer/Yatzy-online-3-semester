@@ -95,7 +95,6 @@ async function rollButton() {
 
 // Fetch function for POST-ing JSON data
 async function postData(url, data){
-    console.log("hvad er data?" ,  data);
     const response = await fetch(url, {
         method: "POST",
         mode: "cors",
