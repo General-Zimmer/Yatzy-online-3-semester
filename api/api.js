@@ -195,14 +195,13 @@ api.post('/throw', async (request, response) => {
  * Response: Status code
  */
 api.post('/lock', async (request, response) => {
-    let index = request.body.index
+    let JSONIndex = JSON.parse(request.body.index)
+    let index = JSONIndex.Index
     let dices = request.session.players[request.session.currentPlayer].dices
     dices[index].lockedState = !dices[index].lockedState
+    console.log(dices[index].lockedState)
     response.sendStatus(200)
 })
-/**
- * 
- */
 
 
 // Game Session initializer for testing with two players - not ment to be a final version
