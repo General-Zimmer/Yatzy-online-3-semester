@@ -1,9 +1,9 @@
 import session from 'express-session';
 import express from 'express';
 import activeSessions from './sessionManager.js';
-import playersRouter from './api/api.js';
-import gameRouter from './api/gameLogic.js';
-
+//import playersRouter from './api/api.js';
+//import gameRouter from './api/gameLogic.js';
+import api from './api/api.js';
 
 
 const app = express();
@@ -16,8 +16,9 @@ app.use(session({
 }));
 
 // Middleware der dirigerer anmodninger til vores "router" RESTful api
-app.use('/api/players', playersRouter);
-app.use('/gameLogic', gameRouter);
+//app.use('/api/players', playersRouter);
+//app.use('/gameLogic', gameRouter);
+app.use('/api', api);
 
 app.use(express.static('assets'));
 app.use(express.json());
@@ -34,7 +35,7 @@ app.use((req, res, next) => {
 });
 
 // Loader pug startsiden
-app.get('/', (request, response) => {
+app.get('/8', (request, response) => {
     response.render('login', {title: "Welcome to yahtzeeeeeeee", knownUser: request.session.isLoggedIn});
 });
 
@@ -45,7 +46,7 @@ app.get('/ayo', (request, response) => {
 
 // HTTP request for at hente brugernavn fra request body og lave en ny session.
 // Klient redirected til spillet hvis der er plads til en ny spiller. Hvis ikke, bliver klienten redirected til lobby
-app.post('/', async (request, response) => {
+app.post('/8', async (request, response) => {
     const user = request.body.Spiller;
     if(!request.session.isLoggedIn){
         request.session.username = user;
@@ -109,4 +110,8 @@ app.get('/logout', (request, response) => {
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
+});
+
+app.get('/test', (request, response) => {
+    response.send("Hello World!");
 });

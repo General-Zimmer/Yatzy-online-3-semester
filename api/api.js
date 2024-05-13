@@ -1,7 +1,6 @@
 import express from 'express'
 import fs from 'fs'
 import * as gameLogic from './game-logic.js'
-import path from 'path'
 
 const api = express.Router();
 
@@ -198,6 +197,7 @@ api.get('/starttestgame', async (request, response) => {
     request.session.gameID = Math.floor(Math.random() * 1000)
     request.session.currentPlayer = 0
     request.session.players = []
+    request.session.isLoggedIn = true
 
     let names = ['Player 1', 'Player 2']
 
