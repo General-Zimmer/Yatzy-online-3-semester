@@ -1,7 +1,6 @@
 import express from 'express'
 import fs from 'fs'
 import * as gameLogic from './game-logic.js'
-import path from 'path'
 
 const api = express.Router();
 

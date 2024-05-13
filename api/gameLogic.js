@@ -9,8 +9,7 @@ api.use(session({
 }));
 
 
-import { dices, throwCount, roundCount, newRound, newGame, rollDice
-        ,getResults } from '../game-logic.js'; 
+import { rollDice, getResults } from './game-logic.js'; 
 
         // Nedenstående er imports vi skal bruge senere
 

@@ -82,7 +82,7 @@ app.get('/logout', (request, response) => {
         if (err) {
             console.log(err);
         }
-        delete activeSessions[request.session.id]
+        delete request.session.id
         console.log(`Session ${request.session.id} logged out and removed`)
         response.redirect('/');
     });
