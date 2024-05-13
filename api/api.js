@@ -61,7 +61,7 @@ api.post('/new', async (request, response) => {
 });
 
 // Hent specifik spiller
-api.get('/:ign', async (request, response) => {
+api.get('/p/:ign', async (request, response) => {
     try{
     const players = await getPlayers()
     const player = players.find(p => p.username === request.params.ign)
