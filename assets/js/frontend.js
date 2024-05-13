@@ -146,9 +146,9 @@ async function lockDice(event) {
     }
     let className = event.target.className;
     let index = event.target.id.split("-")[2];
-    console.log(index);
+    let data = '{"index":}'
 
-    let response = await postData('http://localhost:8000/api/lock', {Index: index});
+    let response = await postData('http://localhost:8000/api/lock', {index: index});
 
     if (response.status == 200) {
         if (className == "dice_regular") {
