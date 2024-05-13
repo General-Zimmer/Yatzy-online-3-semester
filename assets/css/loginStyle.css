@@ -1,0 +1,58 @@
+/* center the login-page content */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* ensure container takes up the full height of the viewport */
+}
+
+.login-form button {
+    margin: 10px auto; /* add margin to center the button horizontally */
+    display: block; /* ensure the button takes up the full width of its container */
+}
+
+.login-form h1 {
+    margin-bottom: 25px; /* add margin bottom to the title */
+    align-items: center;
+}
+
+.login-form label {
+    margin-bottom: 10px; /* add margin bottom to the label */
+    align-items: center;
+}
+
+.login-form input {
+    border: 1px solid #45a049;
+    border-radius: 5px;
+    margin-bottom: 10px; /* add margin bottom to the input */
+}
+
+.login-form .centered-button {
+    margin-top: 5px; /* add margin top to the wrapping div */
+}
+
+.login-form input[type="text"] {
+    font-size: 16px; /* increase font size */
+    padding: 8px; /* increase padding to make the input field bigger */
+    width: calc(100% - 16px); /* adjust width to accommodate increased padding */
+    box-sizing: border-box; /* ensure padding and border are included in the width */
+}
+
+.login-form button {
+    margin-top: 10px;
+    padding: 10px 25px;
+    background-color: #45a049;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 24, 8, 0.2);
+}
+
+.login-form button:hover {
+    background-color: #6ac054;
+    transform: scale(1.05); /* increase size by 5% */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* add a slight shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* add smooth transition */
+}
