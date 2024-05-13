@@ -69,6 +69,11 @@ app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
 
     response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
+
+// Loader point siden
+app.get('/points', (request, response) => {
+    response.render('points', {title: "Current score", knownUser: request.session.isLoggedIn});
+});
     
 app.get('/logout', (request, response) => {
     request.session.destroy((err) => {
