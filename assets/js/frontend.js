@@ -61,7 +61,7 @@ async function rollButton() {
 
             let diceValue = gameDataJSON.dices[i-1];
             console.log(diceValue)
-            diceHolders[i].src = `./assets/dice-animation/dice_animation_${i}.gif`;
+            //diceHolders[i].src = `./assets/dice-animation/dice_animation_${i}.gif`;
         }
     }
 
