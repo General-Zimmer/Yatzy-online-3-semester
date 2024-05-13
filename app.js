@@ -85,14 +85,17 @@ function checkIfAuthenticated(request, response, next) {
 
 app.get('/lobby', checkIfAuthenticated, (request, response) =>{
     const sessionCount = Object.keys(activeSessions).length;
-    response.render("lobby")
+    response.render("lobby", {title: "Snart bliver det sjovt!!"})
 });
 
 // Render yatzy pug
 app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
     const sessionCount = Object.keys(activeSessions).length;
 
-    response.render('yatzy');
+    if (sessionCount > 2) {
+        return response.redirect('/lobby');
+    }
+    response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
     
 app.get('/logout', (request, response) => {
