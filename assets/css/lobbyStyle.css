@@ -1,0 +1,37 @@
+/* center the lobby content */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* ensure container takes up the full height of the viewport */
+}
+
+.lobby-form h1 {
+    margin-bottom: 25px; /* add margin bottom to the title */
+    align-items: center;
+}
+
+/* button style */
+.container button {
+    margin: 10px auto; /* add margin to center the button horizontally */
+    display: block; /* ensure the button takes up the full width of its container */
+}
+
+.container button {
+    margin-top: 10px;
+    padding: 10px 25px;
+    background-color: #45a049;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 24px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 24, 8, 0.2);
+}
+
+.container button:hover {
+    background-color: #6ac054;
+    transform: scale(1.05); /* increase size by 5% */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* add a slight shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* add smooth transition */
+}

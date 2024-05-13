@@ -74,7 +74,10 @@ app.get('/lobby', checkIfAuthenticated, (request, response) =>{
 // Render yatzy pug
 app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
 
-    response.render('yatzy');
+    if (sessionCount > 2) {
+        return response.redirect('/lobby');
+    }
+    response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
     
 app.get('/logout', (request, response) => {
