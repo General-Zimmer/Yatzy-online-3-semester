@@ -28,11 +28,12 @@ app.set('view engine', 'pug');
  
 
 // Middleware kun brugt til at teste, ikke vigtig
+/*
 app.use((req, res, next) => {
     //console.log(`Session ID: ${req.session.id}, Initiated: ${req.session.initiated}`);
     console.log(activeSessions)
     next();
-});
+});*/
 
 // Loader pug startsiden
 app.get('/8', (request, response) => {

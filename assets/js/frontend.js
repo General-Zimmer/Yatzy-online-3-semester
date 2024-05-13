@@ -43,7 +43,6 @@ async function rollButton() {
     //const delay = ms => new Promise(res => setTimeout(res, ms));
 
     //Fetching from server - POST
-    console.log(lockedState)
     let gameDataJSON = await postData('http://localhost:8000/api/throw',{lockedState: lockedState})
 
     //Locking
@@ -144,6 +143,7 @@ function lockDice(event) {
         alert("Du har ikke kastet endnu");
         return;
     }
+    
 
     let index = event.target.id.split("-")[2];
     if (lockedState[index - 1]) {

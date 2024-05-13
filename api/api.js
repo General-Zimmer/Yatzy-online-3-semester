@@ -1,6 +1,7 @@
 import express from 'express'
 import fs from 'fs'
 import * as gameLogic from './game-logic.js'
+import session from 'express-session';
 
 const api = express.Router();
 
@@ -153,22 +154,17 @@ api.post('/throw', async (request, response) => {
     //Increment the players throw count - Perhaps there sould be some error handeling here
     request.session.players[request.session.currentPlayer].throwCount++
     
-    //Get dice locked state from the request
-    let lockedState = request.body.lockedState
-    
     //Get the game data from the session
     let currentPlayer = request.session.currentPlayer
     let dices = request.session.players[currentPlayer].dices
     let throwCount = request.session.players[currentPlayer].throwCount
 
-    //Roll the dice
-    for (let i = 0; i < dices.length; i++) {
-        dices[i].lockedState = lockedState[i]
-    }
+    //Roll the dice and get the results
     dices = gameLogic.rollDice(dices)
     let results = gameLogic.getResults(dices)
     
     //Send a response
+    //Remember to add turn
     response.json({ dices : dices, throwCount : throwCount, results : results})
 })
 
@@ -191,6 +187,23 @@ api.post('/throw', async (request, response) => {
         }
     })
 })*/
+
+
+/**
+ * API endpoint for locking a dice
+ * Request: JSON object with the index of the dice to lock
+ * Response: Status code
+ */
+api.post('/lock', async (request, response) => {
+    let index = request.body.index
+    let dices = request.session.players[request.session.currentPlayer].dices
+    dices[index].lockedState = !dices[index].lockedState
+    response.sendStatus(200)
+})
+/**
+ * 
+ */
+
 
 // Game Session initializer for testing with two players - not ment to be a final version
 api.get('/starttestgame', async (request, response) => {
