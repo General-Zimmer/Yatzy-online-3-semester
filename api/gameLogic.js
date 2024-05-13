@@ -62,7 +62,7 @@ api.post('/startgame', async (request, response) => {
     let players = []
     try {
         players = Array.from(request.body.players)
-        
+        players.sort((a, b) => a.name.localeCompare(b.name))
     } catch (error) {
         response.status(400).json({ message: error.message })
         return
@@ -99,10 +99,13 @@ api.post('/startgame', async (request, response) => {
         [chance, -1],
         [yatzy, -1]
         ]),
+        throwCount: 0,
     })}
 
 response.redirect('http://localhost:8000/yatzy');
 })
+
+
 
 export default api;
 
