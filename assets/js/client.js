@@ -37,7 +37,35 @@ async function rollTheDice() {
         console.error('Error rolling the dice:', error.message);
     }
 }
-    
+
+async function addPlayersToGame() {
+    try {
+        const response = await fetch('/api/gameLogic/rollDice');
+        if (!response.ok) {
+            throw new Error('Failed to roll the dice');
+        }
+        const data = await response.json();
+    } catch (error) {
+        console.error('Error rolling the dice:', error.message);
+    }
+}
+
+async function addPlayersToGame(url="http://localhost:8000/lobby", data={}){
+    const response = await fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ userName: userName, ...data })
+    })
+    let answer = await response.json();
+    if(answer.status == "OK"){
+        document.getElementById('player').innerHTML = data.username
+    }
+}
+
+let tilføjSpillerButton = document.getElementBy
 
 let buttonNode = document.getElementById('rollButton');
 buttonNode.addEventListener('click', () => {
