@@ -1,7 +1,30 @@
 doctype html 
 html(lang="en")
     include includes/header 
+    link(rel="stylesheet", href="/css/pointsStyle.css")
+    include includes/pointsmenu 
     body
-        h1 Liste af spillere + point 
-        h3 Lots of dynamic fun data, woo!! 
+        .container
+            table
+                tr
+                    th Player
+                    th Round
+                    th Throw
+                    th Score
+                tr
+                    td Bobsine
+                    td 3
+                    td 3
+                    td 25
+                tr
+                    td Alice
+                    td 3
+                    td 1
+                    td 18
+                tr
+                    td Bob
+                    td 3
+                    td 1
+                    td 20
+ 
         include includes/footer 

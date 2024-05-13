@@ -2,7 +2,7 @@ import session from 'express-session';
 import express from 'express';
 import playersRouter from './api/api.js';
 import gameRouter from './api/gameLogic.js';
-
+import api from './api/api.js';
 
 
 const app = express();
@@ -15,8 +15,8 @@ app.use(session({
 }));
 
 // Middleware der dirigerer anmodninger til vores "router" RESTful api
-app.use('/api/players', playersRouter);
-app.use('/gameLogic', gameRouter);
+//app.use('/api/players', playersRouter);
+//app.use('/gameLogic', gameRouter);
 
 app.use(express.static('assets'));
 app.use(express.json());
@@ -71,6 +71,11 @@ app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
 
     response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
+
+// Loader point siden
+app.get('/points', (request, response) => {
+    response.render('points', {title: "Current score", knownUser: request.session.isLoggedIn});
+});
     
 app.get('/logout', (request, response) => {
     request.session.destroy((err) => {
@@ -83,6 +88,9 @@ app.get('/logout', (request, response) => {
     });
 }
 );
+
+//API needs to be at the bottem of the file, ortherwise it wont use apps middleware correctly
+app.use('/api', api);
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
