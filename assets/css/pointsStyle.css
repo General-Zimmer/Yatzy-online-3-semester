@@ -2,7 +2,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 90vh; /* ensure container takes up (almost) the full height of the viewport */
+    min-height: 90vh; /* ensure container takes up the full height of the viewport */
 }
 
 table {
@@ -15,12 +15,12 @@ table {
 
 td {
 	border: 2px solid #45a049;
-	background-color: #f0fac0;
+	background-color: #fff3c5;
 	padding: 4px;
     text-align: center; /* center align text in cells */
 }
 
 /* apply different background color to even rows */
 tr:nth-child(even) td {
-    background-color: #8afade;
+    background-color: #d8fced;
 }
