@@ -39,8 +39,8 @@ async function rollButton() {
         return;
     }
     
-    //Delay while fetching the new dice values. See old code below
-    //const delay = ms => new Promise(res => setTimeout(res, ms));
+    //Delay while fetching the new dice values.
+    const delay = ms => new Promise(res => setTimeout(res, ms));
 
     //Fetching from server - POST
     let gameDataJSON = await postData('http://localhost:8000/api/throw',{})
@@ -55,31 +55,19 @@ async function rollButton() {
         diceHolders[i] = document.getElementById(`dice-holder-${i}`);
         
         if (!gameDataJSON.dices[i-1].lockedState){
-
-            let diceValue = gameDataJSON.dices[i-1];
-            //console.log(diceValue)
-            //diceHolders[i].src = `./assets/dice-animation/dice_animation_${i}.gif`;
-        }
-    }
-
-    /* Old code left for reference
-    for (let i = 1; i < 6; i++) {
-        diceHolders[i] = document.getElementById(`dice-holder-${i}`);
-
-        if (!gameLogic.dices[i - 1].lockedState) {
             const setPermanentDiceValue = async (j) => {
-                diceHolders[j].src = `./assets/dice-animation/dice_animation_${j}.gif`;
+                diceHolders[j].src = `./pics/dice-animation/dice_animation_${j}.gif`;
 
-                let diceValue = gameLogic.dices[j - 1].value;
+                let diceValue = gameDataJSON.dices[j - 1].value;
 
                 await delay(2000);
-                diceHolders[j].src = `./assets/die_${diceValue}.png`;
+                diceHolders[j].src = `./pics/die_${diceValue}.png`;
             };
             setPermanentDiceValue(i);
         }
     }
-    */
-    //await delay(2100);
+
+    await delay(2100); //Dont know if this is needed, but leaving it in for now
     updateThrowCount(gameDataJSON.throwCount);
     updateScoreFields(gameDataJSON.results);
 
@@ -93,7 +81,7 @@ async function rollButton() {
 
 }
 
-// Fetch function for POST-ing JSON data
+// Fetch function for POST-ing JSON data - shoud perharps be PUT instead
 async function postData(url, data={}){
     const response = await fetch(url, {
         method: "POST",
