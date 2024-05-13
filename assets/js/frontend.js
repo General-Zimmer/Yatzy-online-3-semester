@@ -43,7 +43,7 @@ async function rollButton() {
     //const delay = ms => new Promise(res => setTimeout(res, ms));
 
     //Fetching from server - POST
-    let gameDataJSON = await postData('http://localhost:8000/api/throw',{lockedState: lockedState})
+    let gameDataJSON = await postData('http://localhost:8000/api/throw',{})
 
     //Locking
     canRoll = false;
@@ -94,7 +94,7 @@ async function rollButton() {
 }
 
 // Fetch function for POST-ing JSON data
-async function postData(url, data={}){
+async function postData(url, data){
     const response = await fetch(url, {
         method: "POST",
         mode: "cors",
@@ -135,7 +135,7 @@ function updateThrowCount(throwCount) {
 }
 
 
-function lockDice(event) {
+async function lockDice(event) {
     // Check if the player is allowed to lock dice
     let throwDisplay = document.getElementById("throwDisplay");
     let turn = throwDisplay.textContent.split(" ")[1];
@@ -143,14 +143,17 @@ function lockDice(event) {
         alert("Du har ikke kastet endnu");
         return;
     }
-
     let index = event.target.id.split("-")[2];
-    if (lockedState[index - 1]) {
-        lockedState[index - 1] = false;
-        event.target.className = "dice_regular";
+    index = parseInt(index) - 1; // The dice array is 0-indexed
+
+    let response = await postData('http://localhost:8000/api/lock', {index: index});
+
+    if (response.message == "Locked dice") {
+        event.target.className = "lockedDice"
+    } else if (response.message == "Unlocked dice") {
+        event.target.className = "dice_regular"
     } else {
-        event.target.className = "lockedDice";
-        lockedState[index - 1] = true;
+        console.log("Error in locking dice"); //Only for  testing consider removing
     }
 }
 
