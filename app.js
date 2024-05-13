@@ -28,7 +28,6 @@ app.set('view engine', 'pug');
 // Middleware kun brugt til at teste, ikke vigtig
 app.use((req, res, next) => {
     //console.log(`Session ID: ${req.session.id}, Initiated: ${req.session.initiated}`);
-    console.log(activeSessions)
     next();
 });
 
@@ -39,7 +38,7 @@ app.get('/', (request, response) => {
 
 // Endpoint kun brugt til at teste
 app.get('/ayo', (request, response) => {
-    response.send(activeSessions[request.session.id])
+    response.send(request.session.id)
 })
 
 // HTTP request for at hente brugernavn fra request body og lave en ny session.
@@ -48,29 +47,13 @@ app.post('/', async (request, response) => {
     const user = request.body.Spiller;
     if(!request.session.isLoggedIn){
         request.session.username = user;
-
-        // Andet vigtigt vi skal have med på session?
-        activeSessions[request.session.id] = {
-            id: request.session.id,
-            username: user,
-            timestamp: new Date(),
-            score: 0,
-            dice: [
-                { value: 0, lockedState: false },
-                { value: 0, lockedState: false },
-                { value: 0, lockedState: false },
-                { value: 0, lockedState: false },
-                { value: 0, lockedState: false }
-            ],
-            throwCount: 0
-        };
         
         console.log(`Player session created: ${user}`);
         request.session.isLoggedIn = true;
 
 
     }
-    response.redirect('/yatzy');
+    response.redirect('/lobby');
 });
 
 // Middleware til at sikkerhedstjekke
@@ -83,13 +66,13 @@ function checkIfAuthenticated(request, response, next) {
 }
 
 app.get('/lobby', checkIfAuthenticated, (request, response) =>{
-    const sessionCount = Object.keys(activeSessions).length;
+    
     response.render("lobby")
 });
 
 // Render yatzy pug
 app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
-    const sessionCount = Object.keys(activeSessions).length;
+
 
     response.render('yatzy');
 });

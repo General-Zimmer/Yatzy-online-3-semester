@@ -1,5 +1,4 @@
 import session from 'express-session';
-import activeSessions from '../sessionManager.js';
 import express from 'express'
 const api = express.Router();
 
@@ -8,6 +7,7 @@ api.use(session({
     resave: false,
     saveUninitialized: false
 }));
+
 
 import { dices, throwCount, roundCount, newRound, newGame, rollDice
         ,getResults } from '../game-logic.js'; 
@@ -22,21 +22,23 @@ import { dices, throwCount, roundCount, newRound, newGame, rollDice
 
 
 api.get('/rollDice', (request, response) => {
-    // Debugging, bare ignorer
-    console.log("Checking session:", request.session.id);
-    console.log("Current active sessions:", Object.keys(activeSessions));
+    const sesh = request.session
+    console.log("Checking session:", sesh.id);
 
-
-    const sessionData = activeSessions[request.session.id];
-    if (!sessionData || !sessionData.dice) {
-        console.error('Session data or dice not found for ID:', request.session.id, sessionData);
-        return response.status(404).json({ error: 'Active session or dice not found' });
+    if (!sesh) {
+        console.error(`Session not found for ID: ${sesh.id} `);
+        return response.status(404).json({ error: 'Active session not found' });
     }
+    sesh.dice = [{ value: 0, lockedState: false },
+    { value: 0, lockedState: false },
+    { value: 0, lockedState: false },
+    { value: 0, lockedState: false },
+    { value: 0, lockedState: false }]
 
-    sessionData.throwCount++
-    sessionData.dice = rollDice(sessionData.dice);
-    // Hvad vil vi gerne have klienten skal modtage, når de kalder på dette endpoint?
-    response.json({ id: request.session.id, dice: sessionData.dice, throwCount: sessionData.throwCount });
+    sesh.throwCount++
+    sesh.dice = rollDice(sesh.dice);
+
+    response.json({ id: request.session.id, dice: sesh.dice, throwCount: sesh.throwCount });
 });
 
 

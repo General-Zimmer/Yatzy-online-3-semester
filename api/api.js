@@ -29,20 +29,7 @@ api.get('/', async (request, response) => {
     }
 })
 
-// Hent specifik spiller
-api.get('/:ign', async (request, response) => {
-    try{
-    const players = await getPlayers()
-    const player = players.find(p => p.username === request.params.ign)
-    if(player){
-        response.json(player)
-    } else {
-        response.status(404).json({ message: 'Player not found'})
-    }
-} catch(error){
-    response.status(500).json({ message: error.message })
-}
-})
+
 
 
 // Tilføj ny spiller
@@ -71,6 +58,21 @@ api.post('/new', async (request, response) => {
         response.status(400).json({ message: error.message });
     }
 });
+
+// Hent specifik spiller
+api.get('/:ign', async (request, response) => {
+    try{
+    const players = await getPlayers()
+    const player = players.find(p => p.username === request.params.ign)
+    if(player){
+        response.json(player)
+    } else {
+        response.status(404).json({ message: 'Player not found'})
+    }
+} catch(error){
+    response.status(500).json({ message: error.message })
+}
+})
 
 
 
