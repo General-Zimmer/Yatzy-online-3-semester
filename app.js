@@ -1,6 +1,5 @@
 import session from 'express-session';
 import express from 'express';
-import activeSessions from './sessionManager.js';
 import playersRouter from './api/api.js';
 import gameRouter from './api/gameLogic.js';
 
@@ -25,12 +24,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'pug');
  
-
-// Middleware kun brugt til at teste, ikke vigtig
-app.use((req, res, next) => {
-    //console.log(`Session ID: ${req.session.id}, Initiated: ${req.session.initiated}`);
-    next();
-});
 
 // Loader pug startsiden
 app.get('/', (request, response) => {
@@ -74,9 +67,6 @@ app.get('/lobby', checkIfAuthenticated, (request, response) =>{
 // Render yatzy pug
 app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
 
-    if (sessionCount > 2) {
-        return response.redirect('/lobby');
-    }
     response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
     
