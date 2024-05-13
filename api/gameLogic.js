@@ -59,6 +59,8 @@ api.get('/startgame', (request, response) =>{
 api.post('/startgame', async (request, response) => {
     const session = request.session
     session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
+    // 'or statistically always unique' --> altså bare bruge en counter? eller? xD
+    
     let players = []
     try {
         players = Array.from(request.body.players)
@@ -99,7 +101,6 @@ api.post('/startgame', async (request, response) => {
         [chance, -1],
         [yatzy, -1]
         ]),
-        turn: 0
     })}
 
 response.redirect('http://localhost:8000/yatzy');
