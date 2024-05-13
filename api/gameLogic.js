@@ -97,7 +97,6 @@ api.post('/startgame', async (request, response) => {
         [chance, -1],
         [yatzy, -1]
         ]),
-        turn: 0
     })}
 
 response.redirect('http://localhost:8000/yatzy');

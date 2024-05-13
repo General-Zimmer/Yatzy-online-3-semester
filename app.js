@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.set('view engine', 'pug');
-
+ 
 
 // Middleware kun brugt til at teste, ikke vigtig
 app.use((req, res, next) => {
