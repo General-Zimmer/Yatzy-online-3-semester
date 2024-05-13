@@ -1,8 +1,8 @@
 doctype html 
 html(lang="en")
     include includes/header 
+    link(rel="stylesheet", href="/css/lobbyStyle.css")
     body
-        h1 Du står i kø med spiller1, spiller 2 osv. 
-        h3 Snart bliver det sjovt!!
-        button(type="submit") Spil Yatzy 
+        .container
+            include includes/lobbyform 
         include includes/footer 
