@@ -91,9 +91,6 @@ app.get('/lobby', checkIfAuthenticated, (request, response) =>{
 app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
     const sessionCount = Object.keys(activeSessions).length;
 
-    if (sessionCount > 2) {
-        return response.redirect('/lobby');
-    }
     response.render('yatzy');
 });
     
