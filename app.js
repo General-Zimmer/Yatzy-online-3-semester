@@ -13,9 +13,6 @@ app.use(session({
 }));
 
 // Middleware der dirigerer anmodninger til vores "router" RESTful api
-//app.use('/api/players', playersRouter);
-//app.use('/gameLogic', gameRouter);
-app.use('/api', api);
 
 app.use(express.static('assets'));
 app.use(express.json());
@@ -105,6 +102,8 @@ app.get('/logout', (request, response) => {
     });
 }
 );
+
+app.use('/api', api);
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");

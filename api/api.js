@@ -168,39 +168,17 @@ api.post('/throw', async (request, response) => {
     response.json({ dices : dices, throwCount : throwCount, results : results})
 })
 
-/**
- * API endpoint for .png image paths
- * Request: The name of the image file
- * Response: The image file
- */
-//C:\Users\1e4e5\Desktop\DIP\Yatzy-online-3-semester\assets\pics
-/*api.get('/assets/pics/:name', (request, response) => {
-    console.log(request.params.name)
-    let filePath = path.join(__dirname, '../assets/pics/', request.params.name)
-    console.log(filePath)
-    fs.readFile(filePath, (error, data) => {
-        if (error) {
-            response.status(404).json({ message: error.message })
-        } else {
-            response.writeHead(200, { 'Content-Type': 'image/png' })
-            response.end(data)
-        }
-    })
-})*/
-
 
 /**
- * API endpoint for locking a dice
+ * API endpoint for locking a die
  * Request: JSON object with the index of the dice to lock
  * Response: Status code
  */
 api.post('/lock', async (request, response) => {
-    console.log(request.body);
     let index = request.body.index
     let dices = request.session.players[request.session.currentPlayer].dices
     dices[index].lockedState = !dices[index].lockedState
-    console.log(dices[index].lockedState)
-    response.sendStatus(200)
+    response.json({ message: dices[index].lockedState ? "Locked dice" : "Unlocked dice" })
 })
 
 
@@ -215,21 +193,21 @@ api.get('/starttestgame', async (request, response) => {
 
     for (let i = 0; i < names.length; i++) {
         let resultsMap = new Map ([
-            ["1's", 0],
-            ["2's", 0],
-            ["3's", 0],
-            ["4's", 0],
-            ["5's", 0],
-            ["6's", 0],
-            ["One Pair", 0],
-            ["Two Pairs", 0],
-            ["Three Same", 0],
-            ["Four Same", 0],
-            ["Full House", 0],
-            ["Small Straight", 0],
-            ["Large Straight", 0],
-            ["Chance", 0],
-            ["Yatzy", 0]
+            ["1's", -1],
+            ["2's", -1],
+            ["3's", -1],
+            ["4's", -1],
+            ["5's", -1],
+            ["6's", -1],
+            ["One Pair", -1],
+            ["Two Pairs", -1],
+            ["Three Same", -1],
+            ["Four Same", -1],
+            ["Full House", -1],
+            ["Small Straight", -1],
+            ["Large Straight", -1],
+            ["Chance", -1],
+            ["Yatzy", -1]
         ])
 
         request.session.players.push({

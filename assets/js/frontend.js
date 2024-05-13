@@ -143,29 +143,18 @@ async function lockDice(event) {
         alert("Du har ikke kastet endnu");
         return;
     }
-    let className = event.target.className;
     let index = event.target.id.split("-")[2];
-    let data = '{"index":}'
+    index = parseInt(index) - 1; // The dice array is 0-indexed
 
     let response = await postData('http://localhost:8000/api/lock', {index: index});
 
-    if (response.status == 200) {
-        if (className == "dice_regular") {
-            event.target.className = "lockedDice";
-        } else if (className == "lockedDice") {
-            event.target.className = "dice_regular";
-        }
-    }
-
-    /*
-    let index = event.target.id.split("-")[2];
-    if (lockedState[index - 1]) {
-        lockedState[index - 1] = false;
-        event.target.className = "dice_regular";
+    if (response.message == "Locked dice") {
+        event.target.className = "lockedDice"
+    } else if (response.message == "Unlocked dice") {
+        event.target.className = "dice_regular"
     } else {
-        event.target.className = "lockedDice";
-        lockedState[index - 1] = true;
-    }*/
+        console.log("Error in locking dice"); //Only for  testing consider removing
+    }
 }
 
 // Checks if all dices are locked, call before rolling
