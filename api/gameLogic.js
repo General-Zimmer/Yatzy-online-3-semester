@@ -64,7 +64,7 @@ api.post('/startgame', async (request, response) => {
     let players = []
     try {
         players = Array.from(request.body.players)
-        
+        players.sort((a, b) => a.name.localeCompare(b.name))
     } catch (error) {
         response.status(400).json({ message: error.message })
         return
@@ -101,10 +101,53 @@ api.post('/startgame', async (request, response) => {
         [chance, -1],
         [yatzy, -1]
         ]),
+        throwCount: 0,
     })}
 
 response.redirect('http://localhost:8000/yatzy');
 })
+
+api.get('/nextTurn', (req, res) => {
+    let playerTurn = getNextTurn(req.session.players)
+
+    if (playerTurn == null) {
+        res.json({ message: 'No players found' })
+        return
+    }
+
+    let playerToSwitch = req.session.players.find(player => player.name == playerTurn)
+    if (playerToSwitch == null) {
+        res.json({ message: 'Player not found' })
+        return
+    }
+
+    res.json({ player: playerToSwitch })
+
+});
+
+function getNextTurn(players) {
+    try {
+        players = Array.from(request.body.players)
+        players.sort((a, b) => a.name.localeCompare(b.name))
+    } catch (error) {
+        response.status(400).json({ message: error.message })
+        return
+    }
+    let playerSmallestTurn = null
+    players.forEach(player => {
+        let playerTurn = 0;
+        for (let i = 0; i < player.results.length; i++) {
+            if (player.results[i] != -1) {
+                playerTurn++
+            }
+        }
+        if (playerSmallestTurn == null || playerTurn < playerSmallestTurn) {
+            playerSmallestTurn = playerTurn
+        }
+})
+}
+
+
 
 export default api;
 
