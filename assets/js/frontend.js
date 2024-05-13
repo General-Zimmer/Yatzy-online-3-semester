@@ -1,14 +1,9 @@
-import * as gameLogic from "./game-logic.js";
-
-
-
-// Basic game logic for front-end (Advanced logic in Game-logic file)
+// Basic game logic for front-end (Advanced logic in game-logic file)
 let canLockScoreField = false;
 
 let canRoll = true;
 
-
-
+const lockedState = [false, false, false, false, false];
 
 // Selection of elements for Eventhandling
 let inputfields = document.getElementsByTagName("input");
@@ -17,17 +12,16 @@ let rollBtn = document.querySelector(".roll-button");
 
 let diceImages = document.getElementsByTagName("img");
 
-updateScoreFields();
-updateSumAndBonusAndTotal();
-
 // Adding event listeners
 
 rollBtn.addEventListener("click", rollButton);
 
+//Fine as is - alter lockDice
 for (let i = 0; i < diceImages.length; i++) {
     diceImages[i].addEventListener("click", lockDice);
 }
 
+//Fine as is - alter lockScoreField
 for (let i = 0; i < inputfields.length; i++) {
     if (inputfields[i].id != "sum" && inputfields[i].id != "total" && inputfields[i].id != "bonus") {
         inputfields[i].addEventListener("click", lockScoreField);
@@ -35,30 +29,40 @@ for (let i = 0; i < inputfields.length; i++) {
 }
 
 async function rollButton() {
+    // Check if the player is allowed to roll
     if (!canRoll) {
-        return;
-    }
-    if (gameLogic.roundCount == 15) {
-        if (window.confirm("Spillet er slut, vil du starte et nyt spil?")) {
-            restartGame();
-        } else {
-            return;
-        }
-    }
-    if (gameLogic.throwCount == 3) {
+        alert("Du har ikke flere kast tilbage");
         return;
     }
     if (checkAllDicesLocked()) {
         alert("Du har låst alle terninger, aflås en for at rulle");
         return;
     }
-    const delay = ms => new Promise(res => setTimeout(res, ms));
+    
+    //Delay while fetching the new dice values. See old code below
+    //const delay = ms => new Promise(res => setTimeout(res, ms));
 
-    gameLogic.rollDice();
+    //Fetching from server - POST
+    let gameDataJSON = await postData('http://localhost:8000/api/throw',{lockedState: lockedState})
 
-    let diceHolders = [];
+    //Locking
     canRoll = false;
     canLockScoreField = false;
+
+    //Rolling the dice assets
+    let diceHolders = [];
+    for (let i = 1; i < 6; i++) {
+        diceHolders[i] = document.getElementById(`dice-holder-${i}`);
+        
+        if (!gameDataJSON.dices[i-1].lockedState){
+
+            let diceValue = gameDataJSON.dices[i-1];
+            //console.log(diceValue)
+            //diceHolders[i].src = `./assets/dice-animation/dice_animation_${i}.gif`;
+        }
+    }
+
+    /* Old code left for reference
     for (let i = 1; i < 6; i++) {
         diceHolders[i] = document.getElementById(`dice-holder-${i}`);
 
@@ -74,13 +78,39 @@ async function rollButton() {
             setPermanentDiceValue(i);
         }
     }
-    await delay(2100);
-    updateThrowCount();
-    updateScoreFields();
+    */
+    //await delay(2100);
+    updateThrowCount(gameDataJSON.throwCount);
+    updateScoreFields(gameDataJSON.results);
+
+    // Update Client state
     canLockScoreField = true;
-    canRoll = true;
+    if (gameDataJSON.throwCount == 3) {
+        canRoll = false;
+    } else {
+        canRoll = true;
+    }
+
 }
 
+// Fetch function for POST-ing JSON data
+async function postData(url, data={}){
+    const response = await fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+
+    let gameData = await response.json();
+    console.log(gameData) //For test remove later
+    //Maby some error handling here
+    return gameData;
+}
+
+//Left as is
 function resetDices() {
     for (let i = 0; i < diceImages.length; i++) {
         diceImages[i].className = "dice_regular";
@@ -88,9 +118,8 @@ function resetDices() {
     }
 }
 
-function updateScoreFields() {
-    let results = gameLogic.getResults();
-
+//Now parameterized
+function updateScoreFields(results) {
     for (let i = 0; i < inputfields.length; i++) {
         let inputfield = inputfields[i];
         if (inputfield.className != "inputSelected" && inputfield.id != "sum" && inputfield.id != "bonus" && inputfield.id != "total") {
@@ -99,47 +128,61 @@ function updateScoreFields() {
     }
 }
 
-function updateThrowCount() {
+//Now parameterized
+function updateThrowCount(throwCount) {
     let throwDisplay = document.getElementById("throwDisplay");
-    throwDisplay.textContent = `Throw ${gameLogic.throwCount}`;
+    throwDisplay.textContent = `Throw ${throwCount}`;
 }
 
+
 function lockDice(event) {
-    if (gameLogic.throwCount == 0) {
+    // Check if the player is allowed to lock dice
+    let throwDisplay = document.getElementById("throwDisplay");
+    let turn = throwDisplay.textContent.split(" ")[1];
+    if (turn == 0) {
+        alert("Du har ikke kastet endnu");
         return;
     }
+
     let index = event.target.id.split("-")[2];
-    if (gameLogic.dices[index - 1].lockedState) {
-        gameLogic.dices[index - 1].lockedState = false;
+    if (lockedState[index - 1]) {
+        lockedState[index - 1] = false;
         event.target.className = "dice_regular";
     } else {
         event.target.className = "lockedDice";
-        gameLogic.dices[index - 1].lockedState = true;
+        lockedState[index - 1] = true;
     }
-
 }
 
+// Checks if all dices are locked, call before rolling
 function checkAllDicesLocked() {
-    let dices = gameLogic.dices;
     let allDicesLocked = true;
-    for (let i = 0; i < dices.length; i++) {
-        if (!dices[i].lockedState) {
+    for (let i = 0; i < lockedState.length; i++) {
+        if (!lockedState[i]) {
             allDicesLocked = false;
         }
     }
     return allDicesLocked;
 }
 
-function lockScoreField(event) {
+async function lockScoreField(event) {
     if (canLockScoreField) {
-        let field = event.target;
-        field.className = "inputSelected";
-        updateSumAndBonusAndTotal();
+        // Prevent user form clicking another field
         canLockScoreField = false;
-        gameLogic.newRound();
-        updateThrowCount();
-        resetDices();
-        updateScoreFields();
+
+        // Lock the field and get the key and value
+        let field = event.target;
+        field.className = "inputSelected"; // See updateScoreFields
+        let key = field.id;
+        let value = field.value; // Is this needed? - perhaps the server should handle the value?
+
+        //API call to server
+        let response = await postData('http://localhost:8000/api/endTurn', {key: key, value: value});
+        
+        // Do stuff with the response
+        // Stuff like switching player or ending the game
+
+        canRoll = true;
     }
 }
 
@@ -176,7 +219,3 @@ function updateSumAndBonusAndTotal() {
     document.getElementById("total").value = totalSum;
 }
 
-function restartGame() {
-    gameLogic.newGame();
-    location.reload();
-}

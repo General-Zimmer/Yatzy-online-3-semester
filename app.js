@@ -5,6 +5,7 @@ import playersRouter from './api/api.js';
 import gameRouter from './api/gameLogic.js';
 
 
+
 const app = express();
 
 // Konfiguration af session middleware
