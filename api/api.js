@@ -61,7 +61,7 @@ api.post('/new', async (request, response) => {
 });
 
 // Hent specifik spiller
-api.get('/:ign', async (request, response) => {
+api.get('/p/:ign', async (request, response) => {
     try{
     const players = await getPlayers()
     const player = players.find(p => p.username === request.params.ign)
@@ -153,70 +153,60 @@ api.post('/throw', async (request, response) => {
     //Increment the players throw count - Perhaps there sould be some error handeling here
     request.session.players[request.session.currentPlayer].throwCount++
     
-    //Get dice locked state from the request
-    let lockedState = request.body.lockedState
-    
     //Get the game data from the session
     let currentPlayer = request.session.currentPlayer
     let dices = request.session.players[currentPlayer].dices
     let throwCount = request.session.players[currentPlayer].throwCount
 
-    //Roll the dice
-    for (let i = 0; i < dices.length; i++) {
-        dices[i].lockedState = lockedState[i]
-    }
+    //Roll the dice and get the results
     dices = gameLogic.rollDice(dices)
     let results = gameLogic.getResults(dices)
     
     //Send a response
+    //Remember to add turn
     response.json({ dices : dices, throwCount : throwCount, results : results})
 })
 
+
 /**
- * API endpoint for .png image paths
- * Request: The name of the image file
- * Response: The image file
+ * API endpoint for locking a die
+ * Request: JSON object with the index of the dice to lock
+ * Response: Status code
  */
-//C:\Users\1e4e5\Desktop\DIP\Yatzy-online-3-semester\assets\pics
-/*api.get('/assets/pics/:name', (request, response) => {
-    console.log(request.params.name)
-    let filePath = path.join(__dirname, '../assets/pics/', request.params.name)
-    console.log(filePath)
-    fs.readFile(filePath, (error, data) => {
-        if (error) {
-            response.status(404).json({ message: error.message })
-        } else {
-            response.writeHead(200, { 'Content-Type': 'image/png' })
-            response.end(data)
-        }
-    })
-})*/
+api.post('/lock', async (request, response) => {
+    let index = request.body.index
+    let dices = request.session.players[request.session.currentPlayer].dices
+    dices[index].lockedState = !dices[index].lockedState
+    response.json({ message: dices[index].lockedState ? "Locked dice" : "Unlocked dice" })
+})
+
 
 // Game Session initializer for testing with two players - not ment to be a final version
 api.get('/starttestgame', async (request, response) => {
     request.session.gameID = Math.floor(Math.random() * 1000)
     request.session.currentPlayer = 0
     request.session.players = []
+    request.session.isLoggedIn = true
 
     let names = ['Player 1', 'Player 2']
 
     for (let i = 0; i < names.length; i++) {
         let resultsMap = new Map ([
-            ["1's", 0],
-            ["2's", 0],
-            ["3's", 0],
-            ["4's", 0],
-            ["5's", 0],
-            ["6's", 0],
-            ["One Pair", 0],
-            ["Two Pairs", 0],
-            ["Three Same", 0],
-            ["Four Same", 0],
-            ["Full House", 0],
-            ["Small Straight", 0],
-            ["Large Straight", 0],
-            ["Chance", 0],
-            ["Yatzy", 0]
+            ["1's", -1],
+            ["2's", -1],
+            ["3's", -1],
+            ["4's", -1],
+            ["5's", -1],
+            ["6's", -1],
+            ["One Pair", -1],
+            ["Two Pairs", -1],
+            ["Three Same", -1],
+            ["Four Same", -1],
+            ["Full House", -1],
+            ["Small Straight", -1],
+            ["Large Straight", -1],
+            ["Chance", -1],
+            ["Yatzy", -1]
         ])
 
         request.session.players.push({

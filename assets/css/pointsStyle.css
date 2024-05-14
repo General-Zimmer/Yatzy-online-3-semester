@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh; /* ensure container takes up the full height of the viewport */
+}
+
+table {
+	border-collapse: collapse;
+    margin: 0 auto; /* center the table horizontally */
+    width: 50%; /* set the width of the table */
+    border: 2px solid #45a049; /* outline border */
+    border-radius: 12px; /* rounded corners */
+}
+
+td {
+	border: 2px solid #45a049;
+	background-color: #fff3c5;
+	padding: 4px;
+    text-align: center; /* center align text in cells */
+}
+
+/* apply different background color to even rows */
+tr:nth-child(even) td {
+    background-color: #d8fced;
+}
