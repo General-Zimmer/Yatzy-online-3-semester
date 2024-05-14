@@ -203,7 +203,7 @@ function chancePoints(dices) {
 /**
  * Return points for yatzy (50 points).<br/>
  * Return 0, if there aren't 5 dice with the same face value.
- */
+ */ 
 
 function yatzyPoints(dices) {
     let frequencies = frequency(dices);
