@@ -132,12 +132,17 @@ api.post('/endTurn', async (request, response) => {
     //Get the selected score field from the request
     let key = request.body.key
     let value = request.body.value
+    console.log(`Selected field: ${key} with value: ${value}`)
     
     //Update the results in the session
     let sessionResults = request.session.players[request.session.currentPlayer].results
     let results = new Map(sessionResults)
     results.set(key, value)
     sessionResults = Array.from(results.entries()) //Map is not JSON serializable
+    request.session.players[request.session.currentPlayer].results = sessionResults
+
+    console.log(sessionResults)
+    console.log(request.session.players[request.session.currentPlayer].results)
 
     //Send a response
     response.json(sessionResults) //Just for test - maybe add something usefull later
@@ -151,12 +156,18 @@ api.post('/endTurn', async (request, response) => {
 */
 api.post('/throw', async (request, response) => {
     //Increment the players throw count - Perhaps there sould be some error handeling here
-    request.session.players[request.session.currentPlayer].throwCount++
+    let currentPlayer = request.session.currentPlayer
+    request.session.players[currentPlayer].throwCount++
+
     
     //Get the game data from the session
-    let currentPlayer = request.session.currentPlayer
     let dices = request.session.players[currentPlayer].dices
     let throwCount = request.session.players[currentPlayer].throwCount
+
+    if (throwCount > 3) {
+        response.status(400).json({ message: "ERROR: You have no more throws left" })
+        return
+    }
 
     //Roll the dice and get the results
     dices = gameLogic.rollDice(dices)
@@ -179,7 +190,20 @@ api.post('/lock', async (request, response) => {
     dices[index].lockedState = !dices[index].lockedState
     response.json({ message: dices[index].lockedState ? "Locked dice" : "Unlocked dice" })
 })
-
+/**
+ * Helper function for switching the player
+*/
+function switchPlayer(request) {
+    let currentPlayer = request.session.currentPlayer
+    let playersLength = request.session.players.length
+    request.session.players[currentPlayer].turn = 0
+    if (currentPlayer + 1 < playersLength) {
+        request.session.currentPlayer++
+    } else {
+        request.session.currentPlayer = 0
+    }
+    console.log(`Player switched to ${request.session.players[request.session.currentPlayer].name}`)
+}
 
 // Game Session initializer for testing with two players - not ment to be a final version
 api.get('/starttestgame', async (request, response) => {
@@ -192,21 +216,21 @@ api.get('/starttestgame', async (request, response) => {
 
     for (let i = 0; i < names.length; i++) {
         let resultsMap = new Map ([
-            ["1's", -1],
-            ["2's", -1],
-            ["3's", -1],
-            ["4's", -1],
-            ["5's", -1],
-            ["6's", -1],
-            ["One Pair", -1],
-            ["Two Pairs", -1],
-            ["Three Same", -1],
-            ["Four Same", -1],
-            ["Full House", -1],
-            ["Small Straight", -1],
-            ["Large Straight", -1],
-            ["Chance", -1],
-            ["Yatzy", -1]
+            ["one", -1],
+            ["two", -1],
+            ["three", -1],
+            ["four", -1],
+            ["five", -1],
+            ["six", -1],
+            ["onePair", -1],
+            ["twoPairs", -1],
+            ["threeSame", -1],
+            ["fourSame", -1],
+            ["fullHouse", -1],
+            ["smallStraight", -1],
+            ["largeStraight", -1],
+            ["chance", -1],
+            ["yatzy", -1]
         ])
 
         request.session.players.push({

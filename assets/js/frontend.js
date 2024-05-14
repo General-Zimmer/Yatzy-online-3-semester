@@ -3,8 +3,6 @@ let canLockScoreField = false;
 
 let canRoll = true;
 
-const lockedState = [false, false, false, false, false];
-
 // Selection of elements for Eventhandling
 let inputfields = document.getElementsByTagName("input");
 
@@ -12,22 +10,24 @@ let rollBtn = document.querySelector(".roll-button");
 
 let diceImages = document.getElementsByTagName("img");
 
-// Adding event listeners
+let throwDisplay = document.getElementById("throwDisplay");
 
+let player = document.getElementById("playerDisplay");
+
+// Adding event listeners
 rollBtn.addEventListener("click", rollButton);
 
-//Fine as is - alter lockDice
 for (let i = 0; i < diceImages.length; i++) {
     diceImages[i].addEventListener("click", lockDice);
 }
 
-//Fine as is - alter lockScoreField
 for (let i = 0; i < inputfields.length; i++) {
     if (inputfields[i].id != "sum" && inputfields[i].id != "total" && inputfields[i].id != "bonus") {
         inputfields[i].addEventListener("click", lockScoreField);
     }
 }
 
+// Functions for the game
 async function rollButton() {
     // Check if the player is allowed to roll
     if (!canRoll) {
@@ -102,7 +102,7 @@ async function postData(url, data={}){
 function resetDices() {
     for (let i = 0; i < diceImages.length; i++) {
         diceImages[i].className = "dice_regular";
-        diceImages[i].src = `./assets/empty-dice_${i}.png`;
+        diceImages[i].src = `./pics/empty-dice_${i}.png`;
     }
 }
 
@@ -118,14 +118,12 @@ function updateScoreFields(results) {
 
 //Now parameterized
 function updateThrowCount(throwCount) {
-    let throwDisplay = document.getElementById("throwDisplay");
     throwDisplay.textContent = `Throw ${throwCount}`;
 }
 
 
 async function lockDice(event) {
     // Check if the player is allowed to lock dice
-    let throwDisplay = document.getElementById("throwDisplay");
     let turn = throwDisplay.textContent.split(" ")[1];
     if (turn == 0) {
         alert("Du har ikke kastet endnu");
