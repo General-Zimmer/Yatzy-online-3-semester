@@ -134,14 +134,47 @@ api.post('/endTurn', async (request, response) => {
     let value = request.body.value
     
     //Update the results in the session
-    let sessionResults = request.session.players[request.session.currentPlayer].results
-    let results = new Map(sessionResults)
-    results.set(key, value)
-    sessionResults = Array.from(results.entries()) //Map is not JSON serializable
+    let currentPlayer = request.session.currentPlayer
+    let sessionResults = request.session.players[currentPlayer].results
+    let resultsMap = new Map(sessionResults)
+    resultsMap.set(key, value)
+    sessionResults = Array.from(resultsMap.entries()) //Map is not JSON serializable
+    request.session.players[currentPlayer].results = sessionResults
+
+
+    //Switch the player
+    switchPlayer(request) //Updates the currentPlayer and round in the session
+    let round = request.session.round
+    if (round > 15) {
+        //End the game response.render(something...)
+    }
 
     //Send a response
-    response.json(sessionResults) //Just for test - maybe add something usefull later
+    currentPlayer = request.session.currentPlayer //Update index reference variable
+    let name = request.session.players[currentPlayer].name
+    let throwCount = request.session.players[currentPlayer].throwCount
+    let results = request.session.players[currentPlayer].results
+
+    response.json({name : name, throwCount : throwCount, results : results, round : round})
 })
+/**
+ * Helper function for switching the player when ending the turn
+ * Updates the currentPlayer and round in the session
+ * Resets the throw count and locked state of the dices for the previous player
+*/
+function switchPlayer(request) {
+    let currentPlayer = request.session.currentPlayer
+    let playersLength = request.session.players.length
+    request.session.players[currentPlayer].throwCount = 0
+    request.session.players[currentPlayer].dices.forEach(dice => {dice.lockedState = false})
+    
+    if (currentPlayer + 1 < playersLength) {
+        request.session.currentPlayer++
+    } else {
+        request.session.currentPlayer = 0
+        request.session.round++
+    }
+}
 
 /*
 * API endpoint for throwing the dice
@@ -151,12 +184,18 @@ api.post('/endTurn', async (request, response) => {
 */
 api.post('/throw', async (request, response) => {
     //Increment the players throw count - Perhaps there sould be some error handeling here
-    request.session.players[request.session.currentPlayer].throwCount++
+    let currentPlayer = request.session.currentPlayer
+    request.session.players[currentPlayer].throwCount++
+
     
     //Get the game data from the session
-    let currentPlayer = request.session.currentPlayer
     let dices = request.session.players[currentPlayer].dices
     let throwCount = request.session.players[currentPlayer].throwCount
+
+    if (throwCount > 3) {
+        response.status(400).json({ message: "ERROR: You have no more throws left" })
+        return
+    }
 
     //Roll the dice and get the results
     dices = gameLogic.rollDice(dices)
@@ -187,26 +226,27 @@ api.get('/starttestgame', async (request, response) => {
     request.session.currentPlayer = 0
     request.session.players = []
     request.session.isLoggedIn = true
+    request.session.round = 1
 
     let names = ['Player 1', 'Player 2']
 
     for (let i = 0; i < names.length; i++) {
         let resultsMap = new Map ([
-            ["1's", -1],
-            ["2's", -1],
-            ["3's", -1],
-            ["4's", -1],
-            ["5's", -1],
-            ["6's", -1],
-            ["One Pair", -1],
-            ["Two Pairs", -1],
-            ["Three Same", -1],
-            ["Four Same", -1],
-            ["Full House", -1],
-            ["Small Straight", -1],
-            ["Large Straight", -1],
-            ["Chance", -1],
-            ["Yatzy", -1]
+            ["one", -1],
+            ["two", -1],
+            ["three", -1],
+            ["four", -1],
+            ["five", -1],
+            ["six", -1],
+            ["onePair", -1],
+            ["twoPairs", -1],
+            ["threeSame", -1],
+            ["fourSame", -1],
+            ["fullHouse", -1],
+            ["smallStraight", -1],
+            ["largeStraight", -1],
+            ["chance", -1],
+            ["yatzy", -1]
         ])
 
         request.session.players.push({
@@ -218,7 +258,7 @@ api.get('/starttestgame', async (request, response) => {
             { value: 0, lockedState: false },
             { value: 0, lockedState: false }
             ], 
-            results: Array.from(resultsMap.entries()),
+            results: Array.from(resultsMap.entries()), //Map is not JSON serializable, and session data must be JSON serializable
             throwCount: 0
     })}
     response.redirect('/yatzy')
