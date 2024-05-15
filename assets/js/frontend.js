@@ -14,6 +14,8 @@ let throwDisplay = document.getElementById("throwDisplay");
 
 let player = document.getElementById("playerDisplay");
 
+let round = document.getElementById("roundDisplay");
+
 // Adding event listeners
 rollBtn.addEventListener("click", rollButton);
 
@@ -31,7 +33,7 @@ for (let i = 0; i < inputfields.length; i++) {
 async function rollButton() {
     // Check if the player is allowed to roll
     if (!canRoll) {
-        alert("Du har ikke flere kast tilbage");
+        alert("Du må ikke rulle nu");
         return;
     }
     if (checkAllDicesLocked()) {
@@ -68,7 +70,7 @@ async function rollButton() {
     }
 
     await delay(2100); //Dont know if this is needed, but leaving it in for now
-    updateThrowCount(gameDataJSON.throwCount);
+    throwDisplay.textContent = `Throw ${gameDataJSON.throwCount}`
     updateScoreFields(gameDataJSON.results);
 
     // Update Client state
@@ -111,14 +113,29 @@ function updateScoreFields(results) {
     for (let i = 0; i < inputfields.length; i++) {
         let inputfield = inputfields[i];
         if (inputfield.className != "inputSelected" && inputfield.id != "sum" && inputfield.id != "bonus" && inputfield.id != "total") {
-            inputfields[i].value = results[i];
+            if (results[i] < 0){
+                inputfield.value = 0;
+            } else {
+                inputfield.value = results[i];
+            }
         }
     }
 }
+//Initializes the score fields at the start of a new players round
+function initScoreFields(results) {
+    for (let i = 0; i < inputfields.length; i++) {
+        let inputfield = inputfields[i];
+        if (inputfield.id != "sum" && inputfield.id != "bonus" && inputfield.id != "total") {
+            if (results[i] < 0){
+                inputfield.value = 0
+                inputfield.className = "txtbox"
+            } else {
+                inputfield.value = results[i]
+                inputfield.className = "inputSelected"
+            }
+        }
+    }
 
-//Now parameterized
-function updateThrowCount(throwCount) {
-    throwDisplay.textContent = `Throw ${throwCount}`;
 }
 
 
@@ -158,31 +175,39 @@ function checkAllDicesLocked() {
 
 async function lockScoreField(event) {
     if (canLockScoreField) {
-        // Prevent user form clicking another field
+        // Prevent user form clicking another field - this is enabled again in the rollButton function
         canLockScoreField = false;
 
         // Lock the field and get the key and value
         let field = event.target;
         field.className = "inputSelected"; // See updateScoreFields
         let key = field.id;
-        let value = field.value; // Is this needed? - perhaps the server should handle the value?
+        let value = field.value;
 
         //API call to server
-        let response = await postData('http://localhost:8000/api/endTurn', {key: key, value: value});
+        let response = await postData('http://localhost:8000/api/endTurn', {key: key, value: value})
         
-        // Do stuff with the response
-        // Stuff like switching player or ending the game
+        //Update the GUI with the resopnse data
+        let resultsArray = []
+        for (let i = 0; i < response.results.length; i++) {
+            resultsArray.push(response.results[i][1])
+        }
+        initScoreFields(resultsArray)
 
-        canRoll = true;
+        throwDisplay.textContent = `Throw ${response.throwCount}`
+        player.textContent = response.name
+        round.textContent = `Round ${response.round}`
+        resetDices();
+        updateSumAndBonusAndTotal()
+        
+        // Reenable the ability to roll for the next player
+        canRoll = true
     }
 }
 
 function updateSumAndBonusAndTotal() {
-    let singleValueids = [];
-    for (let i = 0; i < 6; i++) {
-        singleValueids[i] = `input-${i+1}s`;
-    }
-
+    let singleValueids = ["one", "two", "three", "four", "five", "six"];
+    
     let sumAmount = 0;
     let extraSum = 0;
 
@@ -198,7 +223,7 @@ function updateSumAndBonusAndTotal() {
 
     document.getElementById("sum").value = sumAmount;
 
-    let bonusField = document.getElementById("bonus");
+    let bonusField = document.getElementById("bonus")
     if (sumAmount >= 63) {
         bonusField.value = 50;
     } else {

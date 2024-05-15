@@ -132,21 +132,49 @@ api.post('/endTurn', async (request, response) => {
     //Get the selected score field from the request
     let key = request.body.key
     let value = request.body.value
-    console.log(`Selected field: ${key} with value: ${value}`)
     
     //Update the results in the session
-    let sessionResults = request.session.players[request.session.currentPlayer].results
-    let results = new Map(sessionResults)
-    results.set(key, value)
-    sessionResults = Array.from(results.entries()) //Map is not JSON serializable
-    request.session.players[request.session.currentPlayer].results = sessionResults
+    let currentPlayer = request.session.currentPlayer
+    let sessionResults = request.session.players[currentPlayer].results
+    let resultsMap = new Map(sessionResults)
+    resultsMap.set(key, value)
+    sessionResults = Array.from(resultsMap.entries()) //Map is not JSON serializable
+    request.session.players[currentPlayer].results = sessionResults
 
-    console.log(sessionResults)
-    console.log(request.session.players[request.session.currentPlayer].results)
+
+    //Switch the player
+    switchPlayer(request) //Updates the currentPlayer and round in the session
+    let round = request.session.round
+    if (round > 15) {
+        //End the game response.render(something...)
+    }
 
     //Send a response
-    response.json(sessionResults) //Just for test - maybe add something usefull later
+    currentPlayer = request.session.currentPlayer //Update index reference variable
+    let name = request.session.players[currentPlayer].name
+    let throwCount = request.session.players[currentPlayer].throwCount
+    let results = request.session.players[currentPlayer].results
+
+    response.json({name : name, throwCount : throwCount, results : results, round : round})
 })
+/**
+ * Helper function for switching the player when ending the turn
+ * Updates the currentPlayer and round in the session
+ * Resets the throw count and locked state of the dices for the previous player
+*/
+function switchPlayer(request) {
+    let currentPlayer = request.session.currentPlayer
+    let playersLength = request.session.players.length
+    request.session.players[currentPlayer].throwCount = 0
+    request.session.players[currentPlayer].dices.forEach(dice => {dice.lockedState = false})
+    
+    if (currentPlayer + 1 < playersLength) {
+        request.session.currentPlayer++
+    } else {
+        request.session.currentPlayer = 0
+        request.session.round++
+    }
+}
 
 /*
 * API endpoint for throwing the dice
@@ -190,20 +218,7 @@ api.post('/lock', async (request, response) => {
     dices[index].lockedState = !dices[index].lockedState
     response.json({ message: dices[index].lockedState ? "Locked dice" : "Unlocked dice" })
 })
-/**
- * Helper function for switching the player
-*/
-function switchPlayer(request) {
-    let currentPlayer = request.session.currentPlayer
-    let playersLength = request.session.players.length
-    request.session.players[currentPlayer].turn = 0
-    if (currentPlayer + 1 < playersLength) {
-        request.session.currentPlayer++
-    } else {
-        request.session.currentPlayer = 0
-    }
-    console.log(`Player switched to ${request.session.players[request.session.currentPlayer].name}`)
-}
+
 
 // Game Session initializer for testing with two players - not ment to be a final version
 api.get('/starttestgame', async (request, response) => {
@@ -211,6 +226,7 @@ api.get('/starttestgame', async (request, response) => {
     request.session.currentPlayer = 0
     request.session.players = []
     request.session.isLoggedIn = true
+    request.session.round = 1
 
     let names = ['Player 1', 'Player 2']
 
@@ -242,7 +258,7 @@ api.get('/starttestgame', async (request, response) => {
             { value: 0, lockedState: false },
             { value: 0, lockedState: false }
             ], 
-            results: Array.from(resultsMap.entries()),
+            results: Array.from(resultsMap.entries()), //Map is not JSON serializable, and session data must be JSON serializable
             throwCount: 0
     })}
     response.redirect('/yatzy')
