@@ -70,7 +70,8 @@ yatzyAPI.post('/startgame', async (request, response) => {
         response.status(400).json({ message: error.message })
         return
     }
- 
+
+    session.players = []
 
     for (let i = 0; i < players.length; i++) {
         session.players.push({
