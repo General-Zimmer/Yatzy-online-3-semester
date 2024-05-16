@@ -45,7 +45,7 @@ async function rollButton() {
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
     //Fetching from server - POST
-    let gameDataJSON = await postData('http://localhost:8000/api/throw',{})
+    let gameDataJSON = await postData('http://localhost:8000/yatzyAPI/throw',{})
 
     //Locking
     canRoll = false;
@@ -149,7 +149,7 @@ async function lockDice(event) {
     let index = event.target.id.split("-")[2];
     index = parseInt(index) - 1; // The dice array is 0-indexed
 
-    let response = await postData('http://localhost:8000/api/lock', {index: index});
+    let response = await postData('http://localhost:8000/yatzyAPI/lock', {index: index});
 
     if (response.message == "Locked dice") {
         event.target.className = "lockedDice"
@@ -185,7 +185,7 @@ async function lockScoreField(event) {
         let value = field.value;
 
         //API call to server
-        let response = await postData('http://localhost:8000/api/endTurn', {key: key, value: value})
+        let response = await postData('http://localhost:8000/yatzyAPI/endTurn', {key: key, value: value})
         
         //Update the GUI with the resopnse data
         let resultsArray = []
