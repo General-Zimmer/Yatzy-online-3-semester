@@ -4,10 +4,10 @@ div(class="lobby-form")
         div
             button(type="submit") Spil Yatzy
     h2 Tilføj spillere
-    form(action="/", method="post")
+    form(action="/lobby", method="post")
         div(class='nySpiller')
-            input(type="username", name="Spiller", class="username", placeholder="Tilføj en spiller", required)
-            button(type="button", onclick="updateSpiller()") +
+            input(type="text", name="lobbySpiller", class="username", placeholder="Tilføj en spiller")
+            button(type="submit", onclick="updateSpiller()") +
 
 script.
     let førsteSpillerTilføjet = false
@@ -27,6 +27,6 @@ script.
 
         }
         spiller[0].placeholder = "Tilføj en spiller mere"
-        spiller[0].value = ""
+
     }
     

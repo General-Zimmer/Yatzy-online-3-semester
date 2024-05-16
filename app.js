@@ -28,22 +28,20 @@ app.set('view engine', 'pug');
 // Loader pug startsiden
 app.get('/', (request, response) => {
     response.render('login', {title: "Welcome to yahtzeeeeeeee", knownUser: request.session.isLoggedIn});
+    if(request.session.isLoggedIn){
+        response.redirect('/lobby');
+    }
 });
-
-// Endpoint kun brugt til at teste
-app.get('/ayo', (request, response) => {
-    response.send(request.session.id)
-})
 
 // HTTP request for at hente brugernavn fra request body og lave en ny session.
 // Klient redirected til spillet hvis der er plads til en ny spiller. Hvis ikke, bliver klienten redirected til lobby
 app.post('/', async (request, response) => {
     const user = request.body.Spiller
     request.session.username = user;
+    session.players = []
         
     console.log(`Player session created: ${user}`);
     request.session.isLoggedIn = true
-
 
     response.redirect('/lobby');
 });
@@ -57,18 +55,22 @@ function checkIfAuthenticated(request, response, next) {
     next()
 }
 
-app.get('/lobby', (request, response) =>{
-    
+app.get('/lobby', checkIfAuthenticated, (request, response) =>{
     response.render("lobby")
 });
 
-app.post('/lobby', checkIfAuthenticated, (request, response) =>{
+app.post('/lobby', async (request, response) => {
+    const user = request.body.lobbySpiller
+    session.players.push( {
+        name: user
+    })
+    console.log(session.players);
 
-})
+});
+
 
 // Render yatzy pug
 app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
-
     response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
 

@@ -61,11 +61,10 @@ async function addPlayersToGame(url="http://localhost:8000/lobby", data={}){
     })
     let answer = await response.json();
     if(answer.status == "OK"){
+
         document.getElementById('player').innerHTML = data.username
     }
 }
-
-let tilføjSpillerButton = document.getElementBy
 
 let buttonNode = document.getElementById('rollButton');
 buttonNode.addEventListener('click', () => {
