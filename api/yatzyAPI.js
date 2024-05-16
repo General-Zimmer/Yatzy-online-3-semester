@@ -1,26 +1,6 @@
-import session from 'express-session';
 import * as gameLogic from './game-logic.js'
 import express from 'express'
 const yatzyAPI = express.Router();
-
-/*
-yatzyAPI.use(session({
-    secret: "Secret_Sauce",
-    resave: false,
-    saveUninitialized: false
-}));
-
-
-import { rollDice, getResults } from './game-logic.js'; 
-
-        // Nedenstående er imports vi skal bruge senere
-
-        /*sameValuePoints, onePairPoints, twoPairPoints
-        ,threeSamePoints, fourSamePoints, fullHousePoints
-        ,largeStraightPoints, chancePoints, yatzyPoints 
-        ,smallStraightPoints
-        */
-
 
 yatzyAPI.get('/rollDice', (request, response) => {
     const sesh = request.session
@@ -125,17 +105,22 @@ yatzyAPI.get('/nextTurn', (req, res) => {
 });
 
 function getNextTurn(players) {
-    try {
+    /*try {
         players = Array.from(request.session.players)
         players.sort((a, b) => a.name.localeCompare(b.name))
     } catch (error) {
-        response.status(400).json({ message: error.message })
+        //response.status(400).json({ message: error.message })
+        console.log(error.message)
         return
-    }
+    }*/
+    players = Array.from(players)
+    players.sort((a, b) => a.name.localeCompare(b.name))
+
     let playerSmallestTurn = null
     let playerSmallestTurnName = null
     players.forEach(player => {
         // Figure out how many turns the player have had.
+        console.log(player.results)
         let playerTurn = 0;
         for (let i = 0; i < player.results.length; i++) {
             if (player.results[i] != -1) {
@@ -143,7 +128,7 @@ function getNextTurn(players) {
             }
         }
         // Check if player is done
-        if (playerTurn == player.getResults.length) {
+        if (playerTurn == player.results.length) {
             playerTurn == null
         }
         // Check if player is smallest
@@ -152,6 +137,8 @@ function getNextTurn(players) {
             playerSmallestTurnName = player.name
         }
 })
+console.log(playerSmallestTurn)
+console.log(playerSmallestTurnName)
 return {turns: playerSmallestTurn, name: playerSmallestTurnName}
 }
 //----------------------------------------------------------------------------------------------------
@@ -174,6 +161,11 @@ yatzyAPI.post('/endTurn', async (request, response) => {
     sessionResults = Array.from(resultsMap.entries()) //Map is not JSON serializable
     request.session.players[currentPlayer].results = sessionResults
 
+    //Testing time
+    let nextTurnJSON = getNextTurn(request.session.players)
+    //let newname = nextTurnJSON.name
+    console.log("old " + request.session.players[currentPlayer].name);
+    //console.log("new" + newname);
 
     //Switch the player
     switchPlayer(request) //Updates the currentPlayer and round in the session
