@@ -2,6 +2,7 @@ import session from 'express-session';
 import express from 'express';
 import players from './api/players.js';
 import yatzyAPI from './api/yatzyAPI.js';
+import fetch from 'node-fetch';
 
 
 const app = express();
@@ -88,7 +89,14 @@ app.get('/logout', (request, response) => {
         response.redirect('/');
     });
 }
-);
+)
+
+app.get('/proccedToGame', (request, response) => {
+    fetch("http://" + request.headers.host + "/api/yatzyAPI/startgame", {
+        method: 'POST'
+    })
+    response.redirect('/yatzy');
+})
 
 //API needs to be at the bottem of the file, ortherwise it wont use apps middleware correctly
 app.use('/api/player', players);
