@@ -83,23 +83,23 @@ yatzyAPI.post('/startgame', async (request, response) => {
             { value: 0, lockedState: false },
             { value: 0, lockedState: false }
         ], 
-        results: new  Map([
-        [one, -1],
-        [two, -1],
-        [three, -1],
-        [four, -1],
-        [five, -1],
-        [six, -1],
-        [onePair, -1],
-        [twoPairs, -1],
-        [threeSame, -1],
-        [fourSame, -1],
-        [fullHouse, -1],
-        [smallStraight, -1],
-        [largeStraight, -1],
-        [chance, -1],
-        [yatzy, -1]
-        ]),
+        results: [
+            { key: "one", value: -1 },
+            { key: "two", value: -1 },
+            { key: "three", value: -1 },
+            { key: "four", value: -1 },
+            { key: "five", value: -1 },
+            { key: "six", value: -1 },
+            { key: "onePair", value: -1 },
+            { key: "twoPairs", value: -1 },
+            { key: "threeSame", value: -1 },
+            { key: "fourSame", value: -1 },
+            { key: "fullHouse", value: -1 },
+            { key: "smallStraight", value: -1 },
+            { key: "largeStraight", value: -1 },
+            { key: "chance", value: -1 },
+            { key: "yatzy", value: -1 }
+        ],
         throwCount: 0,
     })}
 
@@ -138,7 +138,7 @@ function getNextTurn(players) {
         // Figure out how many turns the player have had.
         let playerTurn = 0;
         for (let i = 0; i < player.results.length; i++) {
-            if (player.results[i] != -1) {
+            if (player.results[i].value != -1) {
                 playerTurn++
             }
         }
