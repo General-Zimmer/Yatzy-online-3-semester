@@ -45,7 +45,7 @@ async function rollButton() {
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
     //Fetching from server - POST
-    let gameDataJSON = await postData('http://localhost:8000/yatzyAPI/throw',{})
+    let gameDataJSON = await postData('http://localhost:8000/api/yatzyAPI/throw',{})
 
     //Locking
     canRoll = false;
@@ -160,6 +160,49 @@ async function lockDice(event) {
     }
 }
 
+// automatically update the points table every 5 seconds
+setInterval(updatePointsTable, 5000);
+
+// call it once immediately to populate the table on page load
+updatePointsTable();
+
+// fetch and update the points table
+async function updatePointsTable() {
+    try {
+        const response = await fetch('http://localhost:8000/api/yatzyAPI/gameStatus');
+        if (!response.ok) {
+            throw new Error('GameStatus response not ok!!');
+        }
+        const gameData = await response.json();
+
+        const pointsTable = document.querySelector('.container table');
+        // clear existing rows
+        pointsTable.innerHTML = `
+            <tr>
+                <th>Player</th>
+                <th>Round</th>
+                <th>Throw</th>
+                <th>Score</th>
+            </tr>
+        `;
+
+        gameData.players.forEach(player => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${player.name}</td>
+                <td>${player.round}</td>
+                <td>${player.throw}</td>
+                <td>${player.score}</td>
+            `;
+            pointsTable.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error fetching game status:', error);
+    }
+}
+
+
+
 // Checks if all dices are locked, call before rolling
 function checkAllDicesLocked() {
     let allDicesLocked = true;
@@ -189,7 +232,7 @@ async function lockScoreField(event) {
         await delay(1000);
 
         //API call to server
-        let response = await postData('http://localhost:8000/yatzyAPI/endTurn', {key: key, value: value})
+        let response = await postData('http://localhost:8000/api/yatzyAPI/endTurn', {key: key, value: value})
         
         //Update the GUI with the resopnse data
         let resultsArray = []
