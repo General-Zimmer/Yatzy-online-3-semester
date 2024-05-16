@@ -133,6 +133,7 @@ function getNextTurn(players) {
         return
     }
     let playerSmallestTurn = null
+    let playerSmallestTurnName = null
     players.forEach(player => {
         let playerTurn = 0;
         for (let i = 0; i < player.results.length; i++) {
@@ -142,9 +143,10 @@ function getNextTurn(players) {
         }
         if (playerSmallestTurn == null || playerTurn < playerSmallestTurn) {
             playerSmallestTurn = playerTurn
+            playerSmallestTurnName = player.name
         }
 })
-return playerSmallestTurn
+return playerSmallestTurnName
 }
 //----------------------------------------------------------------------------------------------------
 /*
