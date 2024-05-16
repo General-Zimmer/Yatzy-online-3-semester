@@ -64,16 +64,13 @@ yatzyAPI.post('/startgame', async (request, response) => {
     
     let players = []
     try {
-        players = Array.from(request.body.players)
+        players = Array.from(session.players)
         players.sort((a, b) => a.name.localeCompare(b.name))
     } catch (error) {
         response.status(400).json({ message: error.message })
         return
     }
-    
-
-
-    request.session.players = []
+ 
 
     for (let i = 0; i < players.length; i++) {
         session.players.push({
