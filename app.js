@@ -1,7 +1,6 @@
 import session from 'express-session';
 import express from 'express';
-import playersRouter from './api/api.js';
-import api from './api/api.js';
+import players from './api/players.js';
 import yatzyAPI from './api/yatzyAPI.js';
 
 
@@ -93,8 +92,6 @@ app.get('/logout', (request, response) => {
 
 //API needs to be at the bottem of the file, ortherwise it wont use apps middleware correctly
 app.use('/api', api);
-app.use('/yatzyAPI', yatzyAPI);
-
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
