@@ -8,25 +8,5 @@ div(class="lobby-form")
         div(class='nySpiller')
             input(type="text", name="lobbySpiller", class="username", placeholder="Tilføj en spiller")
             button(type="submit", onclick="updateSpiller()") +
-
-script.
-    let førsteSpillerTilføjet = false
-    function updateSpiller() {
-        let spiller = document.getElementsByClassName("username");
-        if(spiller[0].value.trim() === ""){
-            return
-        }
-        let spillerHeader = document.getElementById("spillerHeader")
-        
-        if(!førsteSpillerTilføjet){
-            spillerHeader.innerText += " " + spiller[0].value
-            førsteSpillerTilføjet = true
-
-        } else {
-            spillerHeader.innerText += ", " + spiller[0].value
-
-        }
-        spiller[0].placeholder = "Tilføj en spiller mere"
-
-    }
+            script(src="/js/pugScript.js")
     
