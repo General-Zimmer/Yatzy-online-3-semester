@@ -160,6 +160,49 @@ async function lockDice(event) {
     }
 }
 
+// automatically update the points table every 5 seconds
+setInterval(updatePointsTable, 5000);
+
+// call it once immediately to populate the table on page load
+updatePointsTable();
+
+// fetch and update the points table
+async function updatePointsTable() {
+    try {
+        const response = await fetch('http://localhost:8000/yatzyAPI/gameStatus');
+        if (!response.ok) {
+            throw new Error('GameStatus response not ok!!');
+        }
+        const gameData = await response.json();
+
+        const pointsTable = document.querySelector('.container table');
+        // clear existing rows
+        pointsTable.innerHTML = `
+            <tr>
+                <th>Player</th>
+                <th>Round</th>
+                <th>Throw</th>
+                <th>Score</th>
+            </tr>
+        `;
+
+        gameData.players.forEach(player => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${player.name}</td>
+                <td>${player.round}</td>
+                <td>${player.throw}</td>
+                <td>${player.score}</td>
+            `;
+            pointsTable.appendChild(row);
+        });
+    } catch (error) {
+        console.error('Error fetching game status:', error);
+    }
+}
+
+
+
 // Checks if all dices are locked, call before rolling
 function checkAllDicesLocked() {
     let allDicesLocked = true;
