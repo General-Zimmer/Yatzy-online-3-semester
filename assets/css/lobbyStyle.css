@@ -1,9 +1,13 @@
 /* center the lobby content */
 .container {
     display: flex;
+    flex-direction: column; /* Stack child elements vertically */
     justify-content: center;
     align-items: center;
     min-height: 95vh; /* ensure container takes up the full height of the viewport */
+    max-width: 100vw;
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
 .lobby-form h1 {
@@ -11,9 +15,16 @@
     align-items: center;
 }
 
+/* add-players-form styles */
+.add-players-form h2 {
+    margin-top: 60px; /* add margin top to the text */
+    margin-bottom: 6px; /* add margin bottom to the text */
+    text-align: center; /* center the h2 element */
+}
+
 /* button style */
 .container button {
-    margin: 10px auto; /* add margin to center the button horizontally */
+    margin: 20px auto; /* add margin to center the button horizontally */
     display: block; /* ensure the button takes up the full width of its container */
 }
 
@@ -39,17 +50,19 @@
 .nySpiller {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* Elementerne starter fra venstre */
+    justify-content: center; /* centered elements */
+    gap: 12px; /* add space between the text input and the button */
 }
 
 input[type="text"] {
     flex: none; /* Forhindrer flexbox i at ændre elementets størrelse */
-    width: 200px;
-    height: 20px;
+    width: 250px;
+    height: 30px;
     padding: 8px 12px;
-    font-size: 16px;
-    border: 2px solid #ccc;
-    border-radius: 4px;
+    font-size: 24px;
+    border: 1px solid #45a049;
+    border-radius: 5px;
+    margin-bottom: 10px; /* add margin bottom to the input */
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -57,21 +70,4 @@ input[type="text"]:focus {
     border-color: #66afe9;
     outline: none;
     box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
-}
-
-button[type="tilføjSpiller"] {
-    margin-left: 5px;
-    flex: none; /* Forhindrer flexbox i at ændre elementets størrelse */
-    background-color: blue;
-    color: white;
-    padding: 4px 5px;
-    font-size: 24px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-button[type="tilføjSpiller"]:hover {
-    background-color: navy;
 }
