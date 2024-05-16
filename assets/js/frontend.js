@@ -183,6 +183,10 @@ async function lockScoreField(event) {
         field.className = "inputSelected"; // See updateScoreFields
         let key = field.id;
         let value = field.value;
+        
+        //Delay for enchanced user experience
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+        await delay(1000);
 
         //API call to server
         let response = await postData('http://localhost:8000/yatzyAPI/endTurn', {key: key, value: value})
