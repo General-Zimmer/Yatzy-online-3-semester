@@ -92,7 +92,7 @@ app.get('/logout', (request, response) => {
 )
 
 app.get('/proccedToGame', (request, response) => {
-    fetch("http://" + request.headers.host + "/api/yatzyAPI/startgame", {
+    fetch(request.protocol + "://" + request.headers.host + "/api/yatzyAPI/startgame", {
         method: 'POST'
     })
     response.redirect('/yatzy');
