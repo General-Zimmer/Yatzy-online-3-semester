@@ -110,23 +110,23 @@ yatzyAPI.get('/nextTurn', (req, res) => {
     let playerTurn = getNextTurn(req.session.players)
 
     if (playerTurn == null) {
-        res.json({ message: 'No players found' })
+        res.json({ message: 'All games done' })
         return
     }
 
-    let playerToSwitch = req.session.players.find(player => player.name == playerTurn)
+    let playerToSwitch = req.session.players.find(player => player.name == playerTurn.name)
     if (playerToSwitch == null) {
-        res.json({ message: 'Player not found' })
+        res.json({ message: 'Error: Player not found' })
         return
     }
 
-    res.json({ player: playerToSwitch })
+    res.json(playerTurn)
 
 });
 
 function getNextTurn(players) {
     try {
-        players = Array.from(request.body.players)
+        players = Array.from(request.session.players)
         players.sort((a, b) => a.name.localeCompare(b.name))
     } catch (error) {
         response.status(400).json({ message: error.message })
@@ -135,18 +135,24 @@ function getNextTurn(players) {
     let playerSmallestTurn = null
     let playerSmallestTurnName = null
     players.forEach(player => {
+        // Figure out how many turns the player have had.
         let playerTurn = 0;
         for (let i = 0; i < player.results.length; i++) {
             if (player.results[i] != -1) {
                 playerTurn++
             }
         }
-        if (playerSmallestTurn == null || playerTurn < playerSmallestTurn) {
+        // Check if player is done
+        if (playerTurn == player.getResults.length) {
+            playerTurn == null
+        }
+        // Check if player is smallest
+        if (playerTurn !== null && (playerSmallestTurn == null || playerTurn < playerSmallestTurn)) {
             playerSmallestTurn = playerTurn
             playerSmallestTurnName = player.name
         }
 })
-return playerSmallestTurnName
+return {turns: playerSmallestTurn, name: playerSmallestTurnName}
 }
 //----------------------------------------------------------------------------------------------------
 /*
