@@ -146,6 +146,7 @@ function getNextTurn(players) {
             playerSmallestTurn = playerTurn
         }
 })
+return playerSmallestTurn
 }
 //----------------------------------------------------------------------------------------------------
 /*
