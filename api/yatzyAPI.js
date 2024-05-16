@@ -244,6 +244,21 @@ yatzyAPI.post('/lock', async (request, response) => {
     response.json({ message: dices[index].lockedState ? "Locked dice" : "Unlocked dice" })
 })
 
+// API endpoint to get current game state
+yatzyAPI.get('/gameStatus', (req, res) => {
+    try {
+        const players = req.session.players.map(player => ({
+            name: player.name,
+            round: player.round,
+            throw: player.throwCount,
+            score: player.results.reduce((acc, [key, value]) => acc + (value > 0 ? value : 0), 0) // summing up the scores
+        }));
+        res.json({ players });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 
 // Game Session initializer for testing with two players - not ment to be a final version
 yatzyAPI.get('/starttestgame', async (request, response) => {
