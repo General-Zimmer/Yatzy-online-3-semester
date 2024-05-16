@@ -91,8 +91,8 @@ app.get('/logout', (request, response) => {
 );
 
 //API needs to be at the bottem of the file, ortherwise it wont use apps middleware correctly
-app.use('/player', players);
-app.use('/yatzyAPI', yatzyAPI);
+app.use('/api/player', players);
+app.use('/api/yatzyAPI', yatzyAPI);
 
 app.listen(8000, () => {
     console.log("Server running on port 8000");
