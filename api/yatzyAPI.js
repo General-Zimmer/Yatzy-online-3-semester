@@ -105,16 +105,14 @@ yatzyAPI.get('/nextTurn', (req, res) => {
 });
 
 function getNextTurn(players) {
-    /*try {
-        players = Array.from(request.session.players)
+    try {
+        players = Array.from(players)
         players.sort((a, b) => a.name.localeCompare(b.name))
     } catch (error) {
         //response.status(400).json({ message: error.message })
         console.log(error.message)
         return
-    }*/
-    players = Array.from(players)
-    players.sort((a, b) => a.name.localeCompare(b.name))
+    }
 
     let playerSmallestTurn = null
     let playerSmallestTurnName = null
@@ -123,7 +121,8 @@ function getNextTurn(players) {
         console.log(player.results)
         let playerTurn = 0;
         for (let i = 0; i < player.results.length; i++) {
-            if (player.results[i] != -1) {
+            console.log();
+            if (player.results[i].value != -1) {
                 playerTurn++
             }
         }
