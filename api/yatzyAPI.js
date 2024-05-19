@@ -257,7 +257,7 @@ yatzyAPI.get('/gameStatus', (req, res) => {
     try {
         const players = req.session.players.map(player => ({
             name: player.name,
-            round: player.round,
+            round: req.session.round,
             throw: player.throwCount,
             score: player.results.reduce((acc, [key, value]) => acc + (value > 0 ? value : 0), 0) // summing up the scores
         }));
@@ -266,6 +266,8 @@ yatzyAPI.get('/gameStatus', (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+
 
 
 // Game Session initializer for testing with two players - not ment to be a final version

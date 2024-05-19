@@ -74,10 +74,28 @@ app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
     response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
 
-// Loader point siden
+// Loader points siden
 app.get('/points', (request, response) => {
-    response.render('points', {title: "Current score", knownUser: request.session.isLoggedIn});
+    const players = request.session.players || [];
+    
+    const playerScores = players.map(player => {
+        
+        return {
+            name: player.name,
+            round: request.session.round, 
+            throw: player.throwCount,
+            totalScore: player.getResults   // TODO: doesn't work properly!
+        };
+    });
+
+    response.render('points', {
+        title: "Current score",
+        playerScores: playerScores
+    });
 });
+
+
+
     
 app.get('/logout', (request, response) => {
     request.session.destroy((err) => {

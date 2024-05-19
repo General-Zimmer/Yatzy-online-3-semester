@@ -160,46 +160,44 @@ async function lockDice(event) {
     }
 }
 
-// automatically update the points table every 5 seconds
-setInterval(updatePointsTable, 5000);
 
-// call it once immediately to populate the table on page load
-updatePointsTable();
+// for updating the points table/page dynamically
+document.addEventListener("DOMContentLoaded", () => {
+    async function updatePointsTable() {
+        try {
+            const response = await fetch('/api/yatzyAPI/gameStatus');
+            if (!response.ok) {
+                throw new Error('Failed to fetch game status');
+            }
+            const gameData = await response.json();
+            const pointsTableBody = document.querySelector('#pointsTable tbody');
 
-// fetch and update the points table
-async function updatePointsTable() {
-    try {
-        const response = await fetch('http://localhost:8000/api/yatzyAPI/gameStatus');
-        if (!response.ok) {
-            throw new Error('GameStatus response not ok!!');
+            // Clear existing rows
+            pointsTableBody.innerHTML = '';
+
+            // Insert new rows
+            gameData.players.forEach(player => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${player.name}</td>
+                    <td>${player.round}</td>
+                    <td>${player.throw}</td>
+                    <td>${player.totalScore}</td>
+                `;
+                pointsTableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching game status:', error);
         }
-        const gameData = await response.json();
-
-        const pointsTable = document.querySelector('.container table');
-        // clear existing rows
-        pointsTable.innerHTML = `
-            <tr>
-                <th>Player</th>
-                <th>Round</th>
-                <th>Throw</th>
-                <th>Score</th>
-            </tr>
-        `;
-
-        gameData.players.forEach(player => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${player.name}</td>
-                <td>${player.round}</td>
-                <td>${player.throw}</td>
-                <td>${player.score}</td>
-            `;
-            pointsTable.appendChild(row);
-        });
-    } catch (error) {
-        console.error('Error fetching game status:', error);
     }
-}
+
+    // automatically update the points table every 5 seconds
+    setInterval(updatePointsTable, 5000);
+
+    // call once immediately to populate the table on page load
+    updatePointsTable();
+});
+
 
 
 

@@ -5,10 +5,18 @@ html(lang="en")
     include includes/pointsmenu 
     body
         .container
-            table
-                tr
-                    th Player
-                    th Round
-                    th Throw
-                    th Score 
+            table#pointsTable
+                thead 
+                    tr
+                        th Player
+                        th Round
+                        th Throw
+                        th Score 
+                tbody 
+                    each player in playerScores
+                        tr
+                            td #{player.name}
+                            td #{player.round}
+                            td #{player.throw}
+                            td #{player.totalScore}
         include includes/footer 
