@@ -172,17 +172,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const gameData = await response.json();
             const pointsTableBody = document.querySelector('#pointsTable tbody');
 
-            // Clear existing rows
+            // clear existing rows
             pointsTableBody.innerHTML = '';
 
-            // Insert new rows
+            // insert new rows
             gameData.players.forEach(player => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${player.name}</td>
                     <td>${player.round}</td>
                     <td>${player.throw}</td>
-                    <td>${player.totalScore}</td>
+                    <td>${player.score}</td>
                 `;
                 pointsTableBody.appendChild(row);
             });

@@ -74,17 +74,36 @@ app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
     response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
 
+
+
+// function to get total score from results
+function calculateTotalScore(player) {
+    let totalScore = 0;
+    for (let i = 0; i < player.results.length; i++) {
+        let score = player.results[i][1];
+        if (score !== -1) {
+            totalScore += parseInt(score, 10); // treat score as an integer with base 10
+        }
+    }
+    return totalScore;
+}
+
+
 // Loader points siden
 app.get('/points', (request, response) => {
     const players = request.session.players || [];
-    
+    const round = request.session.round || 0;
+
     const playerScores = players.map(player => {
-        
+        console.log('Player:', player);
+        const totalScore = calculateTotalScore(player); 
+        console.log('Total Score for', player.name, ':', totalScore);
+
         return {
             name: player.name,
-            round: request.session.round, 
+            round: round,
             throw: player.throwCount,
-            totalScore: player.getResults   // TODO: doesn't work properly!
+            totalScore: totalScore
         };
     });
 
@@ -93,7 +112,6 @@ app.get('/points', (request, response) => {
         playerScores: playerScores
     });
 });
-
 
 
     
