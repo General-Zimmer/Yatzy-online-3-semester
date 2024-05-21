@@ -1,3 +1,4 @@
+// API for the Yatzy game itself.
 import * as gameLogic from './game-logic.js'
 import express from 'express'
 const yatzyAPI = express.Router();
@@ -36,7 +37,6 @@ yatzyAPI.get('/getResults', (req, res) => {
 yatzyAPI.get('/startgame', (request, response) =>{
     response.render('yatzy')
 })
-
 yatzyAPI.post('/startgame', async (request, response) => {
     const session = request.session
     session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
@@ -63,23 +63,23 @@ yatzyAPI.post('/startgame', async (request, response) => {
             { value: 0, lockedState: false },
             { value: 0, lockedState: false }
         ], 
-        results: new  Map([
-        [one, -1],
-        [two, -1],
-        [three, -1],
-        [four, -1],
-        [five, -1],
-        [six, -1],
-        [onePair, -1],
-        [twoPairs, -1],
-        [threeSame, -1],
-        [fourSame, -1],
-        [fullHouse, -1],
-        [smallStraight, -1],
-        [largeStraight, -1],
-        [chance, -1],
-        [yatzy, -1]
-        ]),
+        results: [
+            { key: "one", value: -1 },
+            { key: "two", value: -1 },
+            { key: "three", value: -1 },
+            { key: "four", value: -1 },
+            { key: "five", value: -1 },
+            { key: "six", value: -1 },
+            { key: "onePair", value: -1 },
+            { key: "twoPairs", value: -1 },
+            { key: "threeSame", value: -1 },
+            { key: "fourSame", value: -1 },
+            { key: "fullHouse", value: -1 },
+            { key: "smallStraight", value: -1 },
+            { key: "largeStraight", value: -1 },
+            { key: "chance", value: -1 },
+            { key: "yatzy", value: -1 }
+        ],
         throwCount: 0,
     })}
 
@@ -109,19 +109,15 @@ function getNextTurn(players) {
         players = Array.from(players)
         players.sort((a, b) => a.name.localeCompare(b.name))
     } catch (error) {
-        //response.status(400).json({ message: error.message })
-        console.log(error.message)
+        console.error(error.message)
         return
     }
-
     let playerSmallestTurn = null
     let playerSmallestTurnName = null
     players.forEach(player => {
         // Figure out how many turns the player have had.
-        console.log(player.results)
         let playerTurn = 0;
         for (let i = 0; i < player.results.length; i++) {
-            console.log();
             if (player.results[i].value != -1) {
                 playerTurn++
             }
@@ -135,16 +131,32 @@ function getNextTurn(players) {
             playerSmallestTurn = playerTurn
             playerSmallestTurnName = player.name
         }
-})
-console.log(playerSmallestTurn)
-console.log(playerSmallestTurnName)
-return {turns: playerSmallestTurn, name: playerSmallestTurnName}
+    })
+    return {turns: playerSmallestTurn, name: playerSmallestTurnName}
 }
-//----------------------------------------------------------------------------------------------------
+/**
+ * API endpoint for the current state of the game
+ * Uses the getNextTurn to find the state of the current player
+ *  */
+yatzyAPI.get('/current',(request, response) => {
+    let getNext = getNextTurn(request.session.players)
+    let name = getNext.name
+    let round = getNext.turns //Maby rename the variables to fit each other
+    let player = request.session.players.find(player => player.name == name)
+    
+    let results = []
+    player.results.forEach(score => results.push(score.value))
+
+    response.json({name : name, 
+        throwCount : player.throwCount, 
+        results : results, //The current players results
+        round : round})
+})
+
 /*
 * API endpoint for ending the turn by selecting a score field
 * Request: JSON object with the key and value of the selected score field
-* Response: JSON object with the updated results array - perhaps this sould just be an OK response
+* Response: Confimation status
 * Updates the results of the current player in the session
 */
 yatzyAPI.post('/endTurn', async (request, response) => {
@@ -153,52 +165,18 @@ yatzyAPI.post('/endTurn', async (request, response) => {
     let value = request.body.value
     
     //Update the results in the session
-    let currentPlayer = request.session.currentPlayer
-    let sessionResults = request.session.players[currentPlayer].results
-    let resultsMap = new Map(sessionResults)
-    resultsMap.set(key, value)
-    sessionResults = Array.from(resultsMap.entries()) //Map is not JSON serializable
-    request.session.players[currentPlayer].results = sessionResults
-
-    //Testing time
-    let nextTurnJSON = getNextTurn(request.session.players)
-    //let newname = nextTurnJSON.name
-    console.log("old " + request.session.players[currentPlayer].name);
-    //console.log("new" + newname);
-
-    //Switch the player
-    switchPlayer(request) //Updates the currentPlayer and round in the session
-    let round = request.session.round
-    if (round > 15) {
-        //End the game response.render(something...)
-    }
-
-    //Send a response
-    currentPlayer = request.session.currentPlayer //Update index reference variable
-    let name = request.session.players[currentPlayer].name
-    let throwCount = request.session.players[currentPlayer].throwCount
-    let results = request.session.players[currentPlayer].results
-
-    response.json({name : name, throwCount : throwCount, results : results, round : round})
-})
-/**
- * Helper function for switching the player when ending the turn
- * Updates the currentPlayer and round in the session
- * Resets the throw count and locked state of the dices for the previous player
-*/
-function switchPlayer(request) {
-    let currentPlayer = request.session.currentPlayer
-    let playersLength = request.session.players.length
-    request.session.players[currentPlayer].throwCount = 0
-    request.session.players[currentPlayer].dices.forEach(dice => {dice.lockedState = false})
+    let getNext = getNextTurn(request.session.players)
+    let name = getNext.name
+    let player = request.session.players.find(player => player.name == name)
+    player.throwCount = 0
+    player.results.forEach(result => {if (result.key == key) result.value = value}) //Affects how getNextTurn calcs player
+    player.dices.forEach(dice => {
+        dice.lockedState = false
+        dice.value = 0
+    })
     
-    if (currentPlayer + 1 < playersLength) {
-        request.session.currentPlayer++
-    } else {
-        request.session.currentPlayer = 0
-        request.session.round++
-    }
-}
+    response.json({status : "Score updated"})
+})
 
 /*
 * API endpoint for throwing the dice
@@ -207,27 +185,23 @@ function switchPlayer(request) {
 * Updates the throw count and dice of the current player
 */
 yatzyAPI.post('/throw', async (request, response) => {
-    //Increment the players throw count - Perhaps there sould be some error handeling here
-    let currentPlayer = request.session.currentPlayer
-    request.session.players[currentPlayer].throwCount++
-
-    
     //Get the game data from the session
-    let dices = request.session.players[currentPlayer].dices
-    let throwCount = request.session.players[currentPlayer].throwCount
-
-    if (throwCount > 3) {
+    let name = getNextTurn(request.session.players).name
+    let player = request.session.players.find(player => player.name == name)
+    
+    //Increment the players throw count
+    player.throwCount++
+    if (player.throwCount > 3) {
         response.status(400).json({ message: "ERROR: You have no more throws left" })
         return
     }
 
     //Roll the dice and get the results
-    dices = gameLogic.rollDice(dices)
-    let results = gameLogic.getResults(dices)
+    player.dices = gameLogic.rollDice(player.dices)
+    let results = gameLogic.getResults(player.dices) //The result of the thow not the players score
     
     //Send a response
-    //Remember to add turn
-    response.json({ dices : dices, throwCount : throwCount, results : results})
+    response.json({ dices : player.dices, throwCount : player.throwCount, results : results})
 })
 
 
@@ -237,42 +211,26 @@ yatzyAPI.post('/throw', async (request, response) => {
  * Response: Status code
  */
 yatzyAPI.post('/lock', async (request, response) => {
+    //Get the game data from the session and request
+    let name = getNextTurn(request.session.players).name
+    let player = request.session.players.find(player => player.name == name)
     let index = request.body.index
-    let dices = request.session.players[request.session.currentPlayer].dices
-    dices[index].lockedState = !dices[index].lockedState
-    response.json({ message: dices[index].lockedState ? "Locked dice" : "Unlocked dice" })
+
+    //Lock the dice
+    player.dices[index].lockedState = !player.dices[index].lockedState
+    response.json({ message: player.dices[index].lockedState ? "Locked dice" : "Unlocked dice" })
 })
 
 
 // Game Session initializer for testing with two players - not ment to be a final version
 yatzyAPI.get('/starttestgame', async (request, response) => {
     request.session.gameID = Math.floor(Math.random() * 1000)
-    request.session.currentPlayer = 0
     request.session.players = []
     request.session.isLoggedIn = true
-    request.session.round = 1
 
-    let names = ['Player 1', 'Player 2']
+    let names = ['Player 1', 'Player 2','Player 3']
 
     for (let i = 0; i < names.length; i++) {
-        let resultsMap = new Map ([
-            ["one", -1],
-            ["two", -1],
-            ["three", -1],
-            ["four", -1],
-            ["five", -1],
-            ["six", -1],
-            ["onePair", -1],
-            ["twoPairs", -1],
-            ["threeSame", -1],
-            ["fourSame", -1],
-            ["fullHouse", -1],
-            ["smallStraight", -1],
-            ["largeStraight", -1],
-            ["chance", -1],
-            ["yatzy", -1]
-        ])
-
         request.session.players.push({
             name: names[i], 
             dices: [
@@ -281,11 +239,28 @@ yatzyAPI.get('/starttestgame', async (request, response) => {
             { value: 0, lockedState: false },
             { value: 0, lockedState: false },
             { value: 0, lockedState: false }
-            ], 
-            results: Array.from(resultsMap.entries()), //Map is not JSON serializable, and session data must be JSON serializable
-            throwCount: 0
+        ], 
+        results: [
+            { key: "one", value: -1 },
+            { key: "two", value: -1 },
+            { key: "three", value: -1 },
+            { key: "four", value: -1 },
+            { key: "five", value: -1 },
+            { key: "six", value: -1 },
+            { key: "onePair", value: -1 },
+            { key: "twoPairs", value: -1 },
+            { key: "threeSame", value: -1 },
+            { key: "fourSame", value: -1 },
+            { key: "fullHouse", value: -1 },
+            { key: "smallStraight", value: -1 },
+            { key: "largeStraight", value: -1 },
+            { key: "chance", value: -1 },
+            { key: "yatzy", value: -1 }
+        ],
+        throwCount: 0,
     })}
-    response.redirect('/yatzy')
+
+response.redirect('http://localhost:8000/yatzy');
 })
 
 
