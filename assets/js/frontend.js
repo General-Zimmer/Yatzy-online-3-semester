@@ -3,7 +3,7 @@ let canLockScoreField = false;
 
 let canRoll = true;
 
-// Selection of elements for Eventhandling
+// Selection of elements for Eventhandling and displaying data
 let inputfields = document.getElementsByTagName("input");
 
 let rollBtn = document.querySelector(".roll-button");
@@ -15,6 +15,12 @@ let throwDisplay = document.getElementById("throwDisplay");
 let player = document.getElementById("playerDisplay");
 
 let round = document.getElementById("roundDisplay");
+
+// Initial display function when the page is rendered
+
+//If handeling multiple webpages we need some selection before updating the GUI
+updateGUI()
+
 
 // Adding event listeners
 rollBtn.addEventListener("click", rollButton);
@@ -83,7 +89,7 @@ async function rollButton() {
 
 }
 
-// Fetch function for POST-ing JSON data - shoud perharps be PUT instead
+// Fetch function for POST-ing JSON data
 async function postData(url, data={}){
     const response = await fetch(url, {
         method: "POST",
@@ -95,8 +101,7 @@ async function postData(url, data={}){
     })
 
     let gameData = await response.json();
-    console.log(gameData) //For test remove later
-    //Maby some error handling here
+    //Maybe some error handeling here
     return gameData;
 }
 
@@ -121,7 +126,7 @@ function updateScoreFields(results) {
         }
     }
 }
-//Initializes the score fields at the start of a new players round
+//Initializes the score fields with the results from the server
 function initScoreFields(results) {
     for (let i = 0; i < inputfields.length; i++) {
         let inputfield = inputfields[i];
@@ -149,7 +154,7 @@ async function lockDice(event) {
     let index = event.target.id.split("-")[2];
     index = parseInt(index) - 1; // The dice array is 0-indexed
 
-    let response = await postData('http://localhost:8000/yatzyAPI/lock', {index: index});
+    let response = await postData('http://localhost:8000/api/yatzyAPI/lock', {index: index});
 
     if (response.message == "Locked dice") {
         event.target.className = "lockedDice"
@@ -233,21 +238,31 @@ async function lockScoreField(event) {
         let response = await postData('http://localhost:8000/api/yatzyAPI/endTurn', {key: key, value: value})
         
         //Update the GUI with the resopnse data
-        let resultsArray = []
-        for (let i = 0; i < response.results.length; i++) {
-            resultsArray.push(response.results[i][1])
+        if (response.status == "Score updated"){
+            updateGUI()
         }
-        initScoreFields(resultsArray)
-
-        throwDisplay.textContent = `Throw ${response.throwCount}`
-        player.textContent = response.name
-        round.textContent = `Round ${response.round}`
-        resetDices();
-        updateSumAndBonusAndTotal()
-        
-        // Reenable the ability to roll for the next player
-        canRoll = true
     }
+}
+
+async function updateGUI(){
+    let response = await fetch("http://localhost:8000/api/yatzyAPI/current", {
+        method: "GET",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+            "Content-Type": "application/json"
+        },
+    })
+    let gameData = await response.json();
+
+    throwDisplay.textContent = `Throw ${gameData.throwCount}`
+    player.textContent = gameData.name
+    round.textContent = `Round ${gameData.round}`
+    initScoreFields(gameData.results)
+    resetDices()
+    updateSumAndBonusAndTotal()
+
+    canRoll = true
 }
 
 function updateSumAndBonusAndTotal() {
@@ -266,7 +281,7 @@ function updateSumAndBonusAndTotal() {
         }
     }
 
-    document.getElementById("sum").value = sumAmount;
+    document.getElementById("sum").value = sumAmount
 
     let bonusField = document.getElementById("bonus")
     if (sumAmount >= 63) {
