@@ -79,7 +79,7 @@ app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
 function calculateTotalScore(player) {
     let totalScore = 0;
     for (let i = 0; i < player.results.length; i++) {
-        let score = player.results[i][1];
+        let score = player.results[i].value;
         if (score !== -1) {
             totalScore += parseInt(score, 10); // treat score as an integer with base 10
         }
@@ -91,12 +91,21 @@ function calculateTotalScore(player) {
 // Loader points siden
 app.get('/points', (request, response) => {
     const players = request.session.players || [];
-    const round = request.session.round || 0;
+    let round = 0;
+    for (let player of players){
+        let count = 0;
+        for (let i = 0; i < player.results.length; i++) {
+            if (player.results[i].value != -1) {
+                count++
+            }
+        }
+        if (count > round) {
+            round = count
+        }
+    }
 
     const playerScores = players.map(player => {
-        console.log('Player:', player);
         const totalScore = calculateTotalScore(player); 
-        console.log('Total Score for', player.name, ':', totalScore);
 
         return {
             name: player.name,
