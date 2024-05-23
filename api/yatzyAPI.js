@@ -46,7 +46,7 @@ yatzyAPI.post('/startgame', async (request, response) => {
     try {
         players = Array.from(session.lobbylist)
         console.log(session.players);
-        players.sort((a, b) => a.name.localeCompare(b.name))
+        players.sort((a, b) => a.localeCompare(b))
     } catch (error) {
         response.status(400).json({ message: error.message })
         return
@@ -108,7 +108,7 @@ yatzyAPI.get('/nextTurn', (req, res) => {
 function getNextTurn(players) {
     try {
         players = Array.from(players)
-        players.sort((a, b) => a.name.localeCompare(b.name))
+        players.sort()
     } catch (error) {
         console.error(error.message)
         return
