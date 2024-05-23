@@ -34,17 +34,18 @@ yatzyAPI.get('/getResults', (req, res) => {
     res.json({ results });
 });
 
-yatzyAPI.get('/startgame', (request, response) =>{
+/*yatzyAPI.get('/startgame', (request, response) =>{
     response.render('yatzy')
-})
+})*/
 yatzyAPI.post('/startgame', async (request, response) => {
     const session = request.session
     session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
     // 'or statistically always unique' --> altså bare bruge en counter? eller? xD
-    
+
     let players = []
     try {
-        players = Array.from(session.players)
+        players = Array.from(session.lobbylist)
+        console.log(session.players);
         players.sort((a, b) => a.name.localeCompare(b.name))
     } catch (error) {
         response.status(400).json({ message: error.message })
@@ -83,7 +84,7 @@ yatzyAPI.post('/startgame', async (request, response) => {
         throwCount: 0,
     })}
 
-response.redirect('http://localhost:8000/yatzy');
+    response.redirect('http://localhost:8000/yatzy');
 })
 
 yatzyAPI.get('/nextTurn', (req, res) => {

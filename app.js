@@ -37,8 +37,8 @@ app.get('/', (request, response) => {
 // Klient redirected til spillet hvis der er plads til en ny spiller. Hvis ikke, bliver klienten redirected til lobby
 app.post('/', async (request, response) => {
     const user = request.body.Spiller
-    request.session.username = user;
-    session.players = []
+    request.session.username = user
+    request.session.lobbylist = Array.from([])
         
     console.log(`Player session created: ${user}`);
     request.session.isLoggedIn = true
@@ -61,10 +61,8 @@ app.get('/lobby', checkIfAuthenticated, (request, response) =>{
 
 app.post('/lobby', async (request, response) => {
     const user = request.body.lobbySpiller
-    session.players.push( {
-        name: user
-    })
-    console.log(session.players);
+    request.session.lobbylist.
+    console.log(request.session.lobbylist);
 
 });
 
