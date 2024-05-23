@@ -38,25 +38,23 @@ yatzyAPI.get('/getResults', (req, res) => {
     response.render('yatzy')
 })*/
 yatzyAPI.post('/startgame', async (request, response) => {
-    const session = request.session
-    session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
+    request.session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
     // 'or statistically always unique' --> altså bare bruge en counter? eller? xD
-
+    
     let players = []
     try {
-        players = Array.from(session.lobbylist)
-        console.log(session.players);
+        players = Array.from(request.session.lobbylist)
         players.sort((a, b) => a.localeCompare(b))
     } catch (error) {
         response.status(400).json({ message: error.message })
         return
     }
 
-    session.players = []
+    request.session.players = []
 
     for (let i = 0; i < players.length; i++) {
-        session.players.push({
-            name: players[i].name, 
+        request.session.players.push({
+            name: players[i], 
             dices: [
             { value: 0, lockedState: false },
             { value: 0, lockedState: false },
