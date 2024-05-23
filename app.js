@@ -63,7 +63,9 @@ app.post('/lobby', async (request, response) => {
     const user = request.body.lobbySpiller
     request.session.lobbylist.push(user)
     console.log(request.session.lobbylist);
+    
 
+    //response.render("lobbyform", {spillerHeader: "hello"})
     response.status(200).json({message: "Player added to lobby"})
 });
 

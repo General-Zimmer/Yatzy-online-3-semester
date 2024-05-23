@@ -5,9 +5,9 @@ div(class="lobby-form")
             button(type="submit") Spil Yatzy
 div(class="add-players-form")
     h2 Tilføj spillere
-    form(action="/lobby", method="post")
-        div(class='nySpiller')
-            input(type="text", name="lobbySpiller", class="username", placeholder="Tilføj en spiller")
-            button(type="submit", onclick="updateSpiller()") +
-            script(src="/js/pugScript.js")
+    //form(action="/lobby", method="post")
+    div(class='nySpiller')
+        input(type="text", name="lobbySpiller", class="username", placeholder="Tilføj en spiller")
+        button(type="submit", onclick="updateSpiller()") +
+        script(src="/js/pugScript.js")
     
