@@ -61,9 +61,10 @@ app.get('/lobby', checkIfAuthenticated, (request, response) =>{
 
 app.post('/lobby', async (request, response) => {
     const user = request.body.lobbySpiller
-    request.session.lobbylist.
+    request.session.lobbylist.push(user)
     console.log(request.session.lobbylist);
 
+    response.status(200).json({message: "Player added to lobby"})
 });
 
 
