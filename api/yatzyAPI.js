@@ -3,40 +3,6 @@ import * as gameLogic from './game-logic.js'
 import express from 'express'
 const yatzyAPI = express.Router();
 
-yatzyAPI.get('/rollDice', (request, response) => {
-    const sesh = request.session
-    console.log("Checking session:", sesh.id);
-
-    if (!sesh) {
-        console.error(`Session not found for ID: ${sesh.id} `);
-        return response.status(404).json({ error: 'Active session not found' });
-    }
-    sesh.dice = [{ value: 0, lockedState: false },
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false }]
-
-    sesh.throwCount++
-    sesh.dice = rollDice(sesh.dice);
-
-    response.json({ id: request.session.id, dice: sesh.dice, throwCount: sesh.throwCount });
-});
-
-
-yatzyAPI.get('/newGame', (req, res) => {
-    newGame();
-    res.json({ message: 'New game started', dices, throwCount, roundCount });
-});
-
-yatzyAPI.get('/getResults', (req, res) => {
-    const results = getResults();
-    res.json({ results });
-});
-
-/*yatzyAPI.get('/startgame', (request, response) =>{
-    response.render('yatzy')
-})*/
 yatzyAPI.post('/startgame', async (request, response) => {
     request.session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
     // 'or statistically always unique' --> altså bare bruge en counter? eller? xD
