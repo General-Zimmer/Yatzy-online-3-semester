@@ -143,12 +143,18 @@ yatzyAPI.get('/current',(request, response) => {
     let round = getNext.turns //Maby rename the variables to fit each other
     let player = request.session.players.find(player => player.name == name)
     
+    if (round !== null) round++ //It is initialized to 0 when it is calculated. Null when the game is over
+
     let results = []
     player.results.forEach(score => results.push(score.value))
+    
+    let diceResults = gameLogic.getResults(player.dices)
 
-    response.json({name : name, 
+    response.json({name : name,
+        dices : player.dices,
+        diceResults : diceResults, //The result of the current throw
         throwCount : player.throwCount, 
-        results : results, //The current players results
+        results : results, //The current players results from previous rounds
         round : round})
 })
 
@@ -250,7 +256,7 @@ yatzyAPI.get('/starttestgame', async (request, response) => {
     request.session.players = []
     request.session.isLoggedIn = true
 
-    let names = ['Player 1', 'Player 2','Player 3']
+    let names = ['Player 1', 'Player 2']
 
     for (let i = 0; i < names.length; i++) {
         request.session.players.push({

@@ -68,11 +68,17 @@ app.post('/lobby', async (request, response) => {
 
 
 // Render yatzy pug
-app.get('/yatzy', checkIfAuthenticated, (request, response) =>{
+app.get('/yatzy', checkIfAuthenticated, checkIfGameStarted, (request, response) =>{
     response.render('yatzy', {title: "Yahtzeeeeeeee!!"});
 });
 
-
+// Middleware to check if game has started
+function checkIfGameStarted(request, response, next) {
+    if (request.session.players?.length === undefined || request.session.players?.length === 0) {
+        return response.status(401).json({ error: 'No playes registered' });
+    }
+    next()
+}
 
 // function to get total score from results
 function calculateTotalScore(player) {
