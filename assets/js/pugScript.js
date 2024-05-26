@@ -19,6 +19,8 @@ let førsteSpillerTilføjet = false
 
         }
         spiller[0].placeholder = "Tilføj en spiller mere"
+        document.getElementsByClassName("username")[0].value = "";  // clear the text field
+
         postSpiller()
     }
 
