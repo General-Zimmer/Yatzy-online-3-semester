@@ -13,8 +13,20 @@ async function getPlayers(){
 
 async function savePlayer(data = {}){
     let players = await getPlayers()
-    players.push(data)
-    players = JSON.stringify(players)
+    let playerFound = false
+
+    players = players.map(player =>{
+        if(player.username === data.username){
+            playerFound = true
+            return data
+        }
+        return player
+    })
+    if(!playerFound){
+        players.push(data)
+    }
+
+    players = JSON.stringify(players, null, 2);
     await fs.promises.writeFile('./players.json', players, {encoding: 'UTF-8'})
 }
 

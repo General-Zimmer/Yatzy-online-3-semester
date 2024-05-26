@@ -1,5 +1,6 @@
 // API for the Yatzy game itself.
 import * as gameLogic from './game-logic.js'
+import * as playerStorage from './players.js'
 import express from 'express'
 const yatzyAPI = express.Router();
 
@@ -12,8 +13,7 @@ yatzyAPI.post('/startgame', async (request, response) => {
         players = Array.from(request.session.lobbylist)
         players.sort((a, b) => a.localeCompare(b))
     } catch (error) {
-        response.status(400).json({ message: error.message })
-        return
+        return response.status(400).json({ message: error.message })
     }
 
     request.session.players = []
@@ -146,6 +146,18 @@ yatzyAPI.post('/endTurn', async (request, response) => {
         dice.value = 0
     })
     
+    try {
+    await playerStorage.savePlayer({
+        player: player, // Hvad sker der mon hvis man smider hele spiller-objektet afsted >:)?
+        username: name,
+        results: player.results,
+        throwcount: player.throwCount
+    })
+} catch(error){
+    return response.status(500).json({
+        status: "Couldn't save player data", error: error.message
+    })
+}
     response.json({status : "Score updated"})
 })
 
