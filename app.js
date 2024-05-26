@@ -62,9 +62,14 @@ app.get('/lobby', checkIfAuthenticated, (request, response) =>{
 app.post('/lobby', async (request, response) => {
     const user = request.body.lobbySpiller
     
-    request.session.players.push(user)
-    
-    response.status(200).json({message: "Player added to lobby"})
+    let players = Array.from(request.session.players)
+
+    if (players.find(player => player === user)) {
+        response.status(400).json({ message: `${user} already in lobby` });
+    } else {
+        request.session.players.push(user)
+        response.status(200).json({message: `${user} added to lobby`})
+    }
 });
 
 
