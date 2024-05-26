@@ -103,24 +103,25 @@ function calculateTotalScore(player) {
 }
 
 
+// function to get which round the player's at
+function getRound(player) {
+    let count = 1;
+    for (let i = 0; i < player.results.length; i++) {
+        if (player.results[i].value != -1) {
+            count++
+        }
+    }
+    return count;
+}
+
+
 // Loader points siden
 app.get('/points', (request, response) => {
     const players = request.session.players || [];
-    let round = 0;
-    for (let player of players){
-        let count = 0;
-        for (let i = 0; i < player.results.length; i++) {
-            if (player.results[i].value != -1) {
-                count++
-            }
-        }
-        if (count > round) {
-            round = count
-        }
-    }
 
     const playerScores = players.map(player => {
         const totalScore = calculateTotalScore(player); 
+        const round = getRound(player);
 
         return {
             name: player.name,
