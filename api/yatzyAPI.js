@@ -13,8 +13,7 @@ yatzyAPI.post('/startgame', async (request, response) => {
         players = Array.from(request.session.lobbylist)
         players.sort((a, b) => a.localeCompare(b))
     } catch (error) {
-        response.status(400).json({ message: error.message })
-        return
+        return response.status(400).json({ message: error.message })
     }
 
     request.session.players = []
