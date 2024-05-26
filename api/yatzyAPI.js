@@ -3,6 +3,51 @@ import * as gameLogic from './game-logic.js'
 import * as playerStorage from './players.js'
 import express from 'express'
 const yatzyAPI = express.Router();
+import fs from 'fs'
+
+
+async function getPlayers() {
+    console.log("Attempting to get players from file...");
+    try {
+        let players = await fs.promises.readFile('./players.json', { encoding: 'UTF-8' });
+        console.log("Successfully read players from file.");
+        return JSON.parse(players);
+    } catch (error) {
+        console.error("Error reading players.json:", error);
+        return [];
+    }
+}
+
+async function savePlayer(data = {}) {
+    console.log("Attempting to save player data:", data);
+    try {
+        let players = await getPlayers();
+        let playerFound = false;
+
+        players = players.map(player => {
+            if (player.username === data.username) {
+                playerFound = true;
+                console.log(`Updating existing player: ${data.username}`);
+                return data;
+            }
+            return player;
+        });
+
+        if (!playerFound) {
+            console.log(`Adding new player: ${data.username}`);
+            players.push(data);
+        }
+
+        players = JSON.stringify(players, null, 2);
+
+        await fs.promises.writeFile('./players.json', players, { encoding: 'UTF-8' });
+        console.log("Player data saved successfully.");
+    } catch (error) {
+        console.error("Error writing to players.json:", error);
+        throw error;
+    }
+}
+
 
 yatzyAPI.post('/startgame', async (request, response) => {
     request.session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
@@ -10,7 +55,7 @@ yatzyAPI.post('/startgame', async (request, response) => {
     
     let players = []
     try {
-        players = Array.from(request.session.lobbylist)
+        players = Array.from(request.session.players)
         players.sort((a, b) => a.localeCompare(b))
     } catch (error) {
         return response.status(400).json({ message: error.message })
@@ -131,35 +176,61 @@ yatzyAPI.get('/current',(request, response) => {
 * Updates the results of the current player in the session
 */
 yatzyAPI.post('/endTurn', async (request, response) => {
-    //Get the selected score field from the request
-    let key = request.body.key
-    let value = request.body.value
-    
-    //Update the results in the session
-    let getNext = getNextTurn(request.session.players)
-    let name = getNext.name
-    let player = request.session.players.find(player => player.name == name)
-    player.throwCount = 0
-    player.results.forEach(result => {if (result.key == key) result.value = value}) //Affects how getNextTurn calcs player
+    // Get the selected score field from the request
+    let key = request.body.key;
+    let value = request.body.value;
+
+    // Update the results in the session
+    let getNext = getNextTurn(request.session.players);
+    let name = getNext.name;
+    let player = request.session.players.find(player => player.name == name);
+    player.throwCount = 0;
+    player.results.forEach(result => { if(result.key === key) result.value = value;}); // Affects how getNextTurn calculates player
     player.dices.forEach(dice => {
-        dice.lockedState = false
-        dice.value = 0
-    })
-    
-    try {
-    await playerStorage.savePlayer({
-        player: player, // Hvad sker der mon hvis man smider hele spiller-objektet afsted >:)?
+        dice.lockedState = false;
+        dice.value = 0;
+    });
+
+    let totalScore = calculateTotalScore(player)
+
+    const playerData = {
         username: name,
-        results: player.results,
-        throwcount: player.throwCount
-    })
-} catch(error){
-    return response.status(500).json({
-        status: "Couldn't save player data", error: error.message
-    })
+        score: totalScore,
+        throwCount: player.throwCount
+    };
+
+    try {
+        await savePlayer(playerData);
+    } catch (error) {
+        return response.status(500).json({
+            status: "Couldn't save player data", error: error.message
+        });
+    }
+
+    response.json({ status: "Score updated" });
+});
+
+
+function calculateTotalScore(player) {
+    let totalScore = 0;
+    let bonus = 0;
+    let singleValueids = ["one", "two", "three", "four", "five", "six"];
+
+    for (let i = 0; i < player.results.length; i++) {
+        let score = player.results[i].value;
+        if (score !== -1) {
+            totalScore += parseInt(score, 10); // treat score as an integer with base 10
+            if (singleValueids.includes(player.results[i].key)) {
+                bonus += parseInt(score, 10)
+            } 
+        }
+    }
+
+    if (bonus >= 63) {
+        totalScore += 50;
+    }
+    return totalScore;
 }
-    response.json({status : "Score updated"})
-})
 
 /*
 * API endpoint for throwing the dice
@@ -272,7 +343,4 @@ response.redirect('http://localhost:8000/yatzy');
 
 
 export default yatzyAPI;
-
-
-
 

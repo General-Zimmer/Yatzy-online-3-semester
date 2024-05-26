@@ -38,7 +38,7 @@ app.get('/', (request, response) => {
 app.post('/', async (request, response) => {
     const user = request.body.Spiller
     request.session.username = user
-    request.session.lobbylist = Array.from([])
+    request.session.players = Array.from([])
         
     console.log(`Player session created: ${user}`);
     request.session.isLoggedIn = true
@@ -61,7 +61,8 @@ app.get('/lobby', checkIfAuthenticated, (request, response) =>{
 
 app.post('/lobby', async (request, response) => {
     const user = request.body.lobbySpiller
-    request.session.lobbylist.push(user)
+    
+    request.session.players.push(user)
     
     response.status(200).json({message: "Player added to lobby"})
 });

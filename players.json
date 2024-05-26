@@ -1,1 +1,17 @@
-[{"username":"Peter","score":25}]
+[
+  {
+    "username": "lol",
+    "score": 10,
+    "throwCount": 0
+  },
+  {
+    "username": "rasmus",
+    "score": 5,
+    "throwCount": 0
+  },
+  {
+    "username": "peter",
+    "score": 6,
+    "throwCount": 0
+  }
+]

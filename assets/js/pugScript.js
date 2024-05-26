@@ -19,7 +19,7 @@ let førsteSpillerTilføjet = false
 
         }
         spiller[0].placeholder = "Tilføj en spiller mere"
-        document.getElementsByClassName("username")[0].value = "";  // clear the text field
+        
 
         postSpiller()
     }
@@ -37,4 +37,5 @@ let førsteSpillerTilføjet = false
         if (result.message === "Player added to lobby"){
             console.log("Player added to lobby")
         }
+        document.getElementsByClassName("username")[0].value = "";  // clear the text field
     }
