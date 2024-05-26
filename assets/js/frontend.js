@@ -17,10 +17,7 @@ let player = document.getElementById("playerDisplay");
 let round = document.getElementById("roundDisplay");
 
 // Initial display function when the page is rendered
-
-//If handeling multiple webpages we need some selection before updating the GUI
 updateGUI()
-
 
 // Adding event listeners
 rollBtn.addEventListener("click", rollButton);
@@ -35,18 +32,30 @@ for (let i = 0; i < inputfields.length; i++) {
     }
 }
 
-// Functions for the game
+// Functions for playing the game
+// ------------------------------------------------------------------------------------------------
+
+// Function for rolling the dice
 async function rollButton() {
+    // Check if the player is allowed to roll
+    if (!canRoll) {
+        alert("Du må ikke kaste nu!");
+        return;
+    }
+    if (checkAllDicesLocked()) {
+        alert("Du har låst alle terningerne");
+        return;
+    }
+    
+    //Locking
+    canRoll = false;
+    canLockScoreField = false;
     
     //Delay while fetching the new dice values.
     const delay = ms => new Promise(res => setTimeout(res, ms));
 
     //Fetching from server - POST
     let gameDataJSON = await postData('http://localhost:8000/api/yatzyAPI/throw',{})
-
-    //Locking
-    canRoll = false;
-    canLockScoreField = false;
 
     //Rolling the dice assets
     let diceHolders = [];
@@ -67,97 +76,9 @@ async function rollButton() {
     }
 
     await delay(2100); //Dont know if this is needed, but leaving it in for now
-    throwDisplay.textContent = `Throw ${gameDataJSON.throwCount}`
-    updateScoreFields(gameDataJSON.results);
 
-    // Update Client state
-    canLockScoreField = true;
-    if (gameDataJSON.throwCount == 3) {
-        canRoll = false;
-    } else {
-        canRoll = true;
-    }
-
+   updateGUI()
 }
-
-// Fetch function for POST-ing JSON data
-async function postData(url, data={}){
-    const response = await fetch(url, {
-        method: "POST",
-        mode: "cors",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-
-    let gameData = await response.json();
-    //Maybe some error handeling here
-    return gameData;
-}
-
-//Left as is
-function resetDices() {
-    for (let i = 0; i < diceImages.length; i++) {
-        diceImages[i].className = "dice_regular";
-        diceImages[i].src = `./pics/empty-dice_${i}.png`;
-    }
-}
-
-//Now parameterized
-function updateScoreFields(results) {
-    for (let i = 0; i < inputfields.length; i++) {
-        let inputfield = inputfields[i];
-        if (inputfield.className != "inputSelected" && inputfield.id != "sum" && inputfield.id != "bonus" && inputfield.id != "total") {
-            if (results[i] < 0){
-                inputfield.value = 0;
-            } else {
-                inputfield.value = results[i];
-            }
-        }
-    }
-}
-//Initializes the score fields with the results from the server
-function initScoreFields(results) {
-    for (let i = 0; i < inputfields.length; i++) {
-        let inputfield = inputfields[i];
-        if (inputfield.id != "sum" && inputfield.id != "bonus" && inputfield.id != "total") {
-            if (results[i] < 0){
-                inputfield.value = 0
-                inputfield.className = "txtbox"
-            } else {
-                inputfield.value = results[i]
-                inputfield.className = "inputSelected"
-            }
-        }
-    }
-
-}
-
-
-async function lockDice(event) {
-    // Check if the player is allowed to lock dice
-    let turn = throwDisplay.textContent.split(" ")[1];
-    if (turn == 0) {
-        alert("Du har ikke kastet endnu");
-        return;
-    }
-    let index = event.target.id.split("-")[2];
-    index = parseInt(index) - 1; // The dice array is 0-indexed
-
-    let response = await postData('http://localhost:8000/api/yatzyAPI/lock', {index: index});
-
-    if (response.message == "Locked dice") {
-        event.target.className = "lockedDice"
-    } else if (response.message == "Unlocked dice") {
-        event.target.className = "dice_regular"
-    } else {
-        console.log("Error in locking dice"); //Only for  testing consider removing
-    }
-}
-
-
-
 
 // Checks if all dices are locked, call before rolling
 function checkAllDicesLocked() {
@@ -172,6 +93,7 @@ function checkAllDicesLocked() {
     return allDicesLocked;
 }
 
+// Locks the score field and sends the data to the server. This ends the turn for the player
 async function lockScoreField(event) {
     if (canLockScoreField) {
         // Prevent user form clicking another field - this is enabled again in the rollButton function
@@ -197,6 +119,48 @@ async function lockScoreField(event) {
     }
 }
 
+// Locks the dice and sends the data to the server
+async function lockDice(event) {
+    // Check if the player is allowed to lock dice
+    let turn = throwDisplay.textContent.split(" ")[1];
+    if (turn == 0) {
+        alert("Du har ikke kastet endnu");
+        return;
+    }
+    let index = event.target.id.split("-")[2];
+    index = parseInt(index) - 1; // The dice array is 0-indexed
+
+    let response = await postData('http://localhost:8000/api/yatzyAPI/lock', {index: index});
+
+    if (response.message == "Locked dice") {
+        event.target.className = "lockedDice"
+    } else if (response.message == "Unlocked dice") {
+        event.target.className = "dice_regular"
+    } else {
+        console.log("Error in locking dice"); //Only for  testing consider removing
+    }
+}
+
+// Generic fetch function for POST-ing JSON data
+async function postData(url, data={}){
+    const response = await fetch(url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+
+    let gameData = await response.json();
+    //Maybe some error handeling here
+    return gameData
+}
+
+// Functions for updating the GUI
+// ------------------------------------------------------------------------------------------------
+
+// Fetches the data from the server and displays it in the GUI - This function must called when loading the file
 async function updateGUI(){
     let response = await fetch("http://localhost:8000/api/yatzyAPI/current", {
         method: "GET",
@@ -206,18 +170,82 @@ async function updateGUI(){
             "Content-Type": "application/json"
         },
     })
+    if (response.status === 400) {
+        console.log("Error in fetching data from server")
+        window.location.href = "/"
+        return;
+    }
+
     let gameData = await response.json();
 
+    if (gameData.round === null) window.location.href = "/points" //Redirect to points page if game is over
+
+    //Displaying the data
     throwDisplay.textContent = `Throw ${gameData.throwCount}`
     player.textContent = gameData.name
     round.textContent = `Round ${gameData.round}`
-    initScoreFields(gameData.results)
-    resetDices()
-    updateSumAndBonusAndTotal()
+    initScoreFields(gameData.results) //Previous results
+    updateSumAndBonusAndTotal() //Only using past results
+    updateScoreFields(gameData.diceResults) //The possible results
+    displayDices(gameData.dices)
+    
 
-    canRoll = true
+    //Handling the players permission to roll and lock
+    if (gameData.throwCount != 0) canLockScoreField = true;
+    if (gameData.throwCount < 3) {
+        canRoll = true;
+    } else {
+        canRoll = false;
+    }
 }
 
+// Displays the dices in the GUI
+function displayDices(dices) {
+    for (let i = 0; i < diceImages.length; i++) {
+        if (dices[i].lockedState) {
+            diceImages[i].className = "lockedDice"
+        } else {
+            diceImages[i].className = "dice_regular"
+        }
+        if (dices[i].value == 0) {
+            diceImages[i].src = `./pics/empty-dice_${i}.png`
+        } else {
+            diceImages[i].src = `./pics/die_${dices[i].value}.png`
+        }
+    }
+}
+
+// Updates the score fields with the results of the last dice roll
+function updateScoreFields(results) {
+    for (let i = 0; i < inputfields.length; i++) {
+        let inputfield = inputfields[i];
+        if (inputfield.className != "inputSelected" && inputfield.id != "sum" && inputfield.id != "bonus" && inputfield.id != "total") {
+            if (results[i] < 0){
+                inputfield.value = 0;
+            } else {
+                inputfield.value = results[i];
+            }
+        }
+    }
+}
+
+//Initializes the score fields with the players previous results
+function initScoreFields(results) {
+    for (let i = 0; i < inputfields.length; i++) {
+        let inputfield = inputfields[i];
+        if (inputfield.id != "sum" && inputfield.id != "bonus" && inputfield.id != "total") {
+            if (results[i] < 0){
+                inputfield.value = 0
+                inputfield.className = "txtbox"
+            } else {
+                inputfield.value = results[i]
+                inputfield.className = "inputSelected"
+            }
+        }
+    }
+}
+
+// Updates the sum, bonus and total fields
 function updateSumAndBonusAndTotal() {
     let singleValueids = ["one", "two", "three", "four", "five", "six"];
     

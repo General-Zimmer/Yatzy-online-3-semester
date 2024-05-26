@@ -4,60 +4,24 @@ import * as playerStorage from './players.js'
 import express from 'express'
 const yatzyAPI = express.Router();
 
-yatzyAPI.get('/rollDice', (request, response) => {
-    const sesh = request.session
-    console.log("Checking session:", sesh.id);
-
-    if (!sesh) {
-        console.error(`Session not found for ID: ${sesh.id} `);
-        return response.status(404).json({ error: 'Active session not found' });
-    }
-    sesh.dice = [{ value: 0, lockedState: false },
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false },
-    { value: 0, lockedState: false }]
-
-    sesh.throwCount++
-    sesh.dice = rollDice(sesh.dice);
-
-    response.json({ id: request.session.id, dice: sesh.dice, throwCount: sesh.throwCount });
-});
-
-
-yatzyAPI.get('/newGame', (req, res) => {
-    newGame();
-    res.json({ message: 'New game started', dices, throwCount, roundCount });
-});
-
-yatzyAPI.get('/getResults', (req, res) => {
-    const results = getResults();
-    res.json({ results });
-});
-
-/*yatzyAPI.get('/startgame', (request, response) =>{
-    response.render('yatzy')
-})*/
 yatzyAPI.post('/startgame', async (request, response) => {
-    const session = request.session
-    session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
+    request.session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
     // 'or statistically always unique' --> altså bare bruge en counter? eller? xD
-
+    
     let players = []
     try {
-        players = Array.from(session.lobbylist)
-        console.log(session.players);
+        players = Array.from(request.session.lobbylist)
         players.sort((a, b) => a.localeCompare(b))
     } catch (error) {
         response.status(400).json({ message: error.message })
         return
     }
 
-    session.players = []
+    request.session.players = []
 
     for (let i = 0; i < players.length; i++) {
-        session.players.push({
-            name: players[i].name, 
+        request.session.players.push({
+            name: players[i], 
             dices: [
             { value: 0, lockedState: false },
             { value: 0, lockedState: false },
@@ -146,12 +110,18 @@ yatzyAPI.get('/current',(request, response) => {
     let round = getNext.turns //Maby rename the variables to fit each other
     let player = request.session.players.find(player => player.name == name)
     
+    if (round !== null) round++ //It is initialized to 0 when it is calculated. Null when the game is over
+
     let results = []
     player.results.forEach(score => results.push(score.value))
+    
+    let diceResults = gameLogic.getResults(player.dices)
 
-    response.json({name : name, 
+    response.json({name : name,
+        dices : player.dices,
+        diceResults : diceResults, //The result of the current throw
         throwCount : player.throwCount, 
-        results : results, //The current players results
+        results : results, //The current players results from previous rounds
         round : round})
 })
 
@@ -265,7 +235,7 @@ yatzyAPI.get('/starttestgame', async (request, response) => {
     request.session.players = []
     request.session.isLoggedIn = true
 
-    let names = ['Player 1', 'Player 2','Player 3']
+    let names = ['Player 1', 'Player 2']
 
     for (let i = 0; i < names.length; i++) {
         request.session.players.push({
