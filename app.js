@@ -83,11 +83,21 @@ function checkIfGameStarted(request, response, next) {
 // function to get total score from results
 function calculateTotalScore(player) {
     let totalScore = 0;
+    let bonus = 0;
+    let singleValueids = ["one", "two", "three", "four", "five", "six"];
+
     for (let i = 0; i < player.results.length; i++) {
         let score = player.results[i].value;
         if (score !== -1) {
             totalScore += parseInt(score, 10); // treat score as an integer with base 10
+            if (singleValueids.includes(player.results[i].key)) {
+                bonus += parseInt(score, 10)
+            } 
         }
+    }
+
+    if (bonus >= 63) {
+        totalScore += 50;
     }
     return totalScore;
 }
