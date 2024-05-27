@@ -1,53 +1,9 @@
 // API for the Yatzy game itself.
 import * as gameLogic from './game-logic.js'
-import * as playerStorage from './players.js'
+import { savePlayer } from './players.js';
 import express from 'express'
 const yatzyAPI = express.Router();
 import fs from 'fs'
-
-
-async function getPlayers() {
-    console.log("Attempting to get players from file...");
-    try {
-        let players = await fs.promises.readFile('./players.json', { encoding: 'UTF-8' });
-        console.log("Successfully read players from file.");
-        return JSON.parse(players);
-    } catch (error) {
-        console.error("Error reading players.json:", error);
-        return [];
-    }
-}
-
-async function savePlayer(data = {}) {
-    console.log("Attempting to save player data:", data);
-    try {
-        let players = await getPlayers();
-        let playerFound = false;
-
-        players = players.map(player => {
-            if (player.username === data.username) {
-                playerFound = true;
-                console.log(`Updating existing player: ${data.username}`);
-                return data;
-            }
-            return player;
-        });
-
-        if (!playerFound) {
-            console.log(`Adding new player: ${data.username}`);
-            players.push(data);
-        }
-
-        players = JSON.stringify(players, null, 2);
-
-        await fs.promises.writeFile('./players.json', players, { encoding: 'UTF-8' });
-        console.log("Player data saved successfully.");
-    } catch (error) {
-        console.error("Error writing to players.json:", error);
-        throw error;
-    }
-}
-
 
 yatzyAPI.post('/startgame', async (request, response) => {
     request.session.gameID = Math.floor(Math.random() * 1000) // todo: Make this not random or statistically always unique
@@ -115,6 +71,7 @@ yatzyAPI.get('/nextTurn', (req, res) => {
 });
 
 function getNextTurn(players) {
+
     try {
         players = Array.from(players)
         players.sort()
@@ -133,8 +90,8 @@ function getNextTurn(players) {
             }
         }
         // Check if player is done
-        if (playerTurn == player.results.length) {
-            playerTurn == null
+        if (playerTurn === player.results.length) {
+            playerTurn = null
         }
         // Check if player is smallest
         if (playerTurn !== null && (playerSmallestTurn == null || playerTurn < playerSmallestTurn)) {
@@ -142,6 +99,9 @@ function getNextTurn(players) {
             playerSmallestTurnName = player.name
         }
     })
+    if (playerSmallestTurn === null) {
+        return null;
+    }
     return {turns: playerSmallestTurn, name: playerSmallestTurnName}
 }
 /**
@@ -191,24 +151,35 @@ yatzyAPI.post('/endTurn', async (request, response) => {
         dice.value = 0;
     });
 
-    let totalScore = calculateTotalScore(player)
+    // Saving if match is over
+    let nextTurn = getNextTurn(request.session.players);
+    if (nextTurn === null) {
+        let players = request.session.players;
+        for (let current of players) {
+            let totalScore = calculateTotalScore(current);
 
-    const playerData = {
-        username: name,
-        score: totalScore,
-        throwCount: player.throwCount
-    };
+            const playerData = {
+                date: new Date().toISOString(),
+                matchID: request.session.gameID,
+                username: current.name,
+                score: totalScore,
+            };
 
-    try {
-        await savePlayer(playerData);
-    } catch (error) {
-        return response.status(500).json({
-            status: "Couldn't save player data", error: error.message
-        });
+            try {
+                await savePlayer(playerData);
+            } catch (error) {
+                return response.status(500).json({
+                    status: "Couldn't save player data",
+                    error: error.message
+                });
+            }
+        }
+        return response.json({ status: "Game over, all data saved." });
     }
 
     response.json({ status: "Score updated" });
 });
+
 
 
 function calculateTotalScore(player) {

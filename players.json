@@ -1,17 +1,14 @@
 [
   {
-    "username": "lol",
-    "score": 10,
-    "throwCount": 0
+    "date": "2024-05-27T19:14:23.454Z",
+    "matchID": 142,
+    "username": "Player1",
+    "score": 44
   },
   {
-    "username": "rasmus",
-    "score": 5,
-    "throwCount": 0
-  },
-  {
-    "username": "peter",
-    "score": 6,
-    "throwCount": 0
+    "date": "2024-05-27T19:14:23.467Z",
+    "matchID": 142,
+    "username": "Player2",
+    "score": 50
   }
 ]

@@ -15,7 +15,7 @@ async function getPlayers() {
     }
 }
 
-async function savePlayer(data = {}) {
+export async function savePlayer(data = {}) {
     console.log("Attempting to save player data:", data);
     try {
         let players = await getPlayers();
@@ -102,4 +102,4 @@ api.get('/p/:ign', async (request, response) => {
     }
 });
 
-export default api;
+export default savePlayer
