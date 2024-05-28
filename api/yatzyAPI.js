@@ -110,23 +110,38 @@ function getNextTurn(players) {
  *  */
 yatzyAPI.get('/current',(request, response) => {
     let getNext = getNextTurn(request.session.players)
-    let name = getNext.name
-    let round = getNext.turns //Maby rename the variables to fit each other
-    let player = request.session.players.find(player => player.name == name)
-    
-    if (round !== null) round++ //It is initialized to 0 when it is calculated. Null when the game is over
 
-    let results = []
-    player.results.forEach(score => results.push(score.value))
+    if (getNext !== null){
     
-    let diceResults = gameLogic.getResults(player.dices)
+        let round = getNext.turns //Maby rename the variables to fit each other
+        let name = getNext.name
+        let player = request.session.players.find(player => player.name == name)
+    
+        if (round !== null) round++
 
-    response.json({name : name,
-        dices : player.dices,
-        diceResults : diceResults, //The result of the current throw
-        throwCount : player.throwCount, 
-        results : results, //The current players results from previous rounds
-        round : round})
+        let results = []
+        player.results.forEach(score => results.push(score.value))
+    
+        let diceResults = gameLogic.getResults(player.dices)
+    
+        response.json({name : name,
+            dices : player.dices,
+            diceResults : diceResults, //The result of the current throw
+            throwCount : player.throwCount, 
+            results : results, //The current players results from previous rounds
+            round : round})
+
+    } else {
+        
+        response.json({name : null,
+            dices : null,
+            diceResults : null,
+            throwCount : null, 
+            results : null, 
+            round : null})
+    }
+
+    
 })
 
 /*

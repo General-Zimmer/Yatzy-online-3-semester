@@ -113,7 +113,7 @@ async function lockScoreField(event) {
         let response = await postData('http://localhost:8000/api/yatzyAPI/endTurn', {key: key, value: value})
         
         //Update the GUI with the resopnse data
-        if (response.status == "Score updated"){
+        if (response.status == "Score updated" || response.status == "Game over, all data saved.") {
             updateGUI()
         }
     }
